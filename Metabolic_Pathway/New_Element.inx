@@ -28,7 +28,7 @@
              <label>This extension is used to create a component of a Metabolic Pathway, it will be created in the canvas at the center of the screen, it can be disabled and will apear insteed at the top left corner.</label>
         </page>
     </param>
-test
+
     <effect>
         <object-type>all</object-type>
         <effects-menu>
