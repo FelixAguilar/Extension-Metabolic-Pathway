@@ -10,9 +10,9 @@
                 <option value="Elemental_Reactions">Elemental Reaction</option>
                 <option value="Metabolic_Building_Block">Metabolic Building Block</option>
             </param>
-            <param name="ID" type="string" gui-text="ID of the element: ">1</param>
-            <param name="KEGG_reaction" type="string" gui-text="ID of the reaction in KEGG: ">R1234</param>
-            <param name="KEGG_enzime" type="string" gui-text="ID of the enzime in KEGG: ">1.1.1.1</param>
+            <param name="ID_M" type="string" gui-text="ID of the element: ">1</param>
+            <param name="KEGG_reaction_M" type="string" gui-text="ID of the reaction in KEGG: ">R1234</param>
+            <param name="KEGG_enzime_M" type="string" gui-text="ID of the enzime in KEGG: ">1.1.1.1</param>
         </page>
         <page name="RC" gui-text="Reference-Compound">
             <param name="type_R" type="optiongroup" appearance="combo" gui-text="Type of Element:">  ➎
@@ -20,9 +20,9 @@
                 <option value="Component">Component</option>
                 <option value="Inverse_Reaction">Inverse Reaction</option>
             </param>
-            <param name="ID" type="string" gui-text="ID of the element: ">1</param>
-            <param name="KEGG_reaction" type="string" gui-text="ID of the reaction in KEGG: ">R1234</param>
-            <param name="KEGG_enzime" type="string" gui-text="ID of the enzime in KEGG: ">1.1.1.1</param>
+            <param name="ID_R" type="string" gui-text="ID of the element: ">1</param>
+            <param name="KEGG_reaction_R" type="string" gui-text="ID of the reaction in KEGG: ">R1234</param>
+            <param name="KEGG_enzime_R" type="string" gui-text="ID of the enzime in KEGG: ">1.1.1.1</param>
         </page>
         <page name="h" gui-text="Help">
              <label>This extension is used to create a component of a Metabolic Pathway, it will be created in the canvas at the center of the screen, it can be disabled and will apear insteed at the top left corner.</label>
