@@ -23,13 +23,18 @@ def add_text(id, x, y, size, text):
     return elem
 
 # Adds a elipse to the given center position and radius.
-def add_elipse(cx, cy, r, color):
+def add_elipse(cx, cy, radius, color):
     style = {'stroke': 'black', 'fill': color, 'stroke-width': '0.25px'}
-    elem = PathElement.arc((cx, cy), r)
+    elem = PathElement.arc((cx, cy), radius)
     elem.style = style
     return elem
 
 # Adds a hexagon to the given center position and side.
+def add_hexagon(cx, cy, radius, side, color):
+    style = {'stroke': 'black', 'fill': color, 'stroke-width': '0.25px'}
+    elem = PathElement.star((cx, cy), (10, 10), 6, (1, 1))
+    elem.style = style
+    return elem
 
 # Adds a rectangle to the given center position, high and base.
 
@@ -112,11 +117,12 @@ def add_elemental_reaction(self, id, reaction, enzime, x, y, r):
     svg_y = svg_format(self, y, 'px')
     svg_r = svg_format(self, r, 'pt')
     svg_s = svg_format(self, font_size, 'pt')
+    svg_l = svg_format(self, 10, 'pt')
 
     layer = self.svg.get_current_layer()
 
     reac = inkex.Group()
-    reac.add(add_elipse(svg_x, svg_y, svg_r, 'yellow'))
+    reac.add(add_hexagon(svg_x, svg_y, svg_r, svg_l, 'yellow'))
     reac.add(add_text('id' + id, svg_x - len(id), svg_y - 3, svg_s, id))
     reac.add(add_text('reaction' + id, svg_x - len(reaction) - 1, svg_y + 1, svg_s, 'R' + reaction))
     reac.add(add_text("enzime" + id, svg_x - len(enzime), svg_y + 5, svg_s, enzime))
