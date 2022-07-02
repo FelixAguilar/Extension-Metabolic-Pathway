@@ -1,7 +1,7 @@
 from operator import length_hint
 from wsgiref.util import request_uri
 import inkex
-from inkex import TextElement, PathElement
+from inkex import TextElement, PathElement, Rectangle
 from re import S
 
 font_size = 10
@@ -29,14 +29,22 @@ def add_elipse(cx, cy, radius, color):
     elem.style = style
     return elem
 
-# Adds a hexagon to the given center position and side.
-def add_hexagon(cx, cy, radius, side, color):
+# Adds a octogon to the given center position and side.
+def add_octogon(cx, cy, radius, color):
     style = {'stroke': 'black', 'fill': color, 'stroke-width': '0.25px'}
-    elem = PathElement.star((cx, cy), (10, 10), 6, (1, 1))
+    elem = PathElement.star((cx, cy), (radius, radius), 8)
+    elem.set('sodipodi:arg1', 0)
+    elem.set('sodipodi:arg2', 0)
+    elem.set('transform', 'rotate(23, ' + str(cx) + ', ' + str(cy) + ')')
     elem.style = style
     return elem
 
 # Adds a rectangle to the given center position, high and base.
+def add_rectangle(cx, cy, base, hight):
+    style = {'stroke': 'black', 'fill': 'none', 'stroke-width': '0.25px'}
+    elem = Rectangle(cx - 5, cy - 5, 10, 10)
+    elem.style = style
+    return elem
 
 # Generates a new metabolic building block in the current layer.
 def add_metabolic_building_block(self, id, x, y, radius):
@@ -109,6 +117,7 @@ def add_inverse_reaction(self, id, reaction, enzime, x, y, radius):
     layer = self.svg.get_current_layer()
     layer.add(reac)
 
+# Generates a new elemental reaction in the current layer.
 def add_elemental_reaction(self, id, reaction, enzime, x, y, r):
     if(r < 25):
         r = 25
@@ -117,12 +126,12 @@ def add_elemental_reaction(self, id, reaction, enzime, x, y, r):
     svg_y = svg_format(self, y, 'px')
     svg_r = svg_format(self, r, 'pt')
     svg_s = svg_format(self, font_size, 'pt')
-    svg_l = svg_format(self, 10, 'pt')
 
     layer = self.svg.get_current_layer()
 
     reac = inkex.Group()
-    reac.add(add_hexagon(svg_x, svg_y, svg_r, svg_l, 'yellow'))
+    reac.add(add_octogon(svg_x, svg_y, svg_r, 'yellow'))
+    reac.add(add_octogon(svg_x, svg_y, svg_r + 1, 'none'))
     reac.add(add_text('id' + id, svg_x - len(id), svg_y - 3, svg_s, id))
     reac.add(add_text('reaction' + id, svg_x - len(reaction) - 1, svg_y + 1, svg_s, 'R' + reaction))
     reac.add(add_text("enzime" + id, svg_x - len(enzime), svg_y + 5, svg_s, enzime))
@@ -137,8 +146,8 @@ def add_component(self, component, x, y, r):
     layer = self.svg.get_current_layer()
 
     reac = inkex.Group()
-    reac.add(add_elipse(svg_x, svg_y, svg_r, 'yellow'))
-    reac.add(add_text('component' + component, svg_x - len(id), svg_y - 3, svg_s, 'C' + component))
+    reac.add(add_rectangle(svg_x, svg_y, svg_r, svg_r))
+    reac.add(add_text('component' + component, svg_x - len(component), svg_y - 3, svg_s, 'C' + component))
     layer.add(reac)
 
 
