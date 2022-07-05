@@ -63,10 +63,16 @@ def add_metabolic_building_block(self, id, x, y, radius):
     svg_font_size = svg_format(self, font_size, 'pt')
 
     # Creates a group and adds all components to it.
-    group = inkex.Group(id = id)
+    group = inkex.Group()
     group.add(add_elipse(x, y, radius, 'lightgray'))
     group.add(add_text(x - 4, y - 1, svg_font_size, 'MBB'))
     group.add(add_text(x - len(id), y + 4, svg_font_size, id))
+
+    #Values.
+    group.set('id', 'M ' + str(id))
+    group.set('x', x)
+    group.set('y', y)
+    group.set('size', radius)
 
     # Adds it to the current layer.
     layer = self.svg.get_current_layer()
