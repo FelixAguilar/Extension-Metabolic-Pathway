@@ -3,7 +3,7 @@ from tokenize import group
 from wsgiref.util import request_uri
 import inkex, re
 from inkex import PathElement, BaseElement
-from re import S
+from re import S, T
 from math import atan2, sin, cos, pi
 
 def is_metabolic_pathway_element(svg_element):
@@ -11,6 +11,24 @@ def is_metabolic_pathway_element(svg_element):
     if(pattern.match(svg_element.get_id())):
             return True
     return False
+
+def get_transformation(element):
+    t = str(element.get('transform'))
+
+    if(t == "None"):
+        return (0,0)
+    else:
+        start = t.find('(')
+        middle = t.find(',')
+        end = t.find(')')
+
+        if(middle == -1):
+            x = float(t[start + 1:end]) 
+            y = float(0)
+        else:
+            x = float(t[start + 1:middle]) 
+            y = float(t[middle + 2:end])
+        return (x,y)
 
 def add_line(x1, y1, x2, y2):
     line = inkex.PathElement()
@@ -33,22 +51,27 @@ def get_angle_line(ox, oy, dx, dy):
     y_delta = dy - oy
     return atan2(y_delta, x_delta) * 180 / pi
 
-def add_straight_arrow(self, o_id, d_id, ox, oy, dx, dy):
+def add_straight_arrow(self, o_id, d_id, ox, oy, dx, dy, dir):
 
     # Calculate the angle of the arrow to the horizontal axis.
     angle = get_angle_line(ox, oy, dx, dy)
 
-    # Triangle half height (sides are 1) and splited into x and y.
-    height = 0.433
-    x_height = height * sin(angle * 180 / pi)
-    y_height = height * cos(angle * 180 / pi)
+    # Triangle height (sides are 1) and splited into x and y.
+    height = 1.2
+    x_height = height * cos(angle * (pi / 180))
+    y_height = height * sin(angle * (pi / 180))
     
     # Creates the group and adds the elements depending on the direction.
     group = inkex.Group()
-    group.add(add_line(ox - x_height, oy - y_height, dx, dy))
-    group.add(add_triangle(dx - x_height, dy - y_height, angle))
-    group.set('id_orig', d_id)
-    group.set('id_dest', o_id)
+    group.add(add_line(ox, oy, dx, dy))
+    if(dir == True):
+        group.add(add_triangle(dx - x_height, dy - y_height, angle))
+        group.set('id_dest', d_id)
+        group.set('id_orig', o_id)
+    else:
+        group.add(add_triangle(ox + x_height, oy + y_height, angle + 180))
+        group.set('id_orig', d_id)
+        group.set('id_dest', o_id)
         
     # Adds the group to the layer and assigns a unique id.
     layer = self.svg.get_current_layer()
@@ -58,7 +81,7 @@ def add_straight_arrow(self, o_id, d_id, ox, oy, dx, dy):
 class Constructor(inkex.EffectExtension):
     
     def add_arguments(self, pars):
-        pars.add_argument('--direction', type=bool, default='False', dest='Direction', help="placement of the arrow head")
+        pars.add_argument('--direction', type=inkex.Boolean, default='False', dest='Direction', help="placement of the arrow head")
 
     def effect(self):
 
@@ -73,53 +96,48 @@ class Constructor(inkex.EffectExtension):
                 inkex.errormsg('The selected elements do not belong to a metabolic pathway or it is a pathway of it.')
                 return
 
-        # Creates a path between them.
+        # Obtains the elements.
         element_A = self.svg.selection[0]
         element_B = self.svg.selection[1]
 
-        if(self.options.Direction):
-            x_d = float(element_A.get('x'))
-            y_d = float(element_A.get('y'))
-            s_d = float(element_A.get('size'))
-            id_d = element_A.get_id()
+        # Obtains the properties of the elements.
+        xd = float(element_A.get('x'))
+        yd = float(element_A.get('y'))
+        sd = float(element_A.get('size'))
+        idd = element_A.get_id()
 
-            x_o = float(element_B.get('x'))
-            y_o = float(element_B.get('y'))
-            s_o = float(element_B.get('size'))
-            id_o = element_B.get_id()
-        else:
-            x_o = float(element_A.get('x'))
-            y_o = float(element_A.get('y'))
-            s_o = float(element_A.get('size'))
-            id_o = element_A.get_id()
+        xo = float(element_B.get('x'))
+        yo = float(element_B.get('y'))
+        so = float(element_B.get('size'))
+        ido = element_B.get_id()
 
-            x_d = float(element_B.get('x'))
-            y_d = float(element_B.get('y'))
-            s_d = float(element_B.get('size'))
-            id_d = element_B.get_id()
-        
-        angle = get_angle_line(x_o, y_o, x_d, y_d)
-        x_s_o = s_o * sin(angle)
-        y_s_o = s_o * cos(angle)
-        x_s_d = s_d * sin(angle)
-        y_s_d = s_d * cos(angle)
+        # Gets the transformations of the elements if there are, and applies them.
+        t = get_transformation(element_A)
+        xd = xd + t[0]
+        yd = yd + t[1]
+        t = get_transformation(element_B)
+        xo = xo + t[0]
+        yo = yo + t[1]
 
-        if(x_o < x_d):
-            x_o += x_s_o
-            x_d -= x_s_d
-        else:
-            x_o -= x_s_o
-            x_d += x_s_d
-        if(y_o < y_d):
-            y_o += y_s_o
-            y_d -= y_s_d
-        else:
-            y_o -= y_s_o
-            y_d += y_s_d
+        #The next section is only for circles.
 
-        add_straight_arrow(self, id_o, id_d, x_o, y_o, x_d, y_d)
-       
-        
+        # Gets the angle of the line between the two elements.
+        angle = get_angle_line(xo, yo, xd, yd)
+
+        # Gets the size of the element splitted into coordinates.
+        sox = so * cos(angle * (pi / 180))
+        soy = so * sin(angle * (pi / 180))
+        sdx = sd * cos(angle * (pi / 180))
+        sdy = sd * sin(angle * (pi / 180))
+
+        # Eliminates the line inside the element.
+        xo = xo + sox
+        yo = yo + soy
+        xd = xd - sdx
+        yd = yd - sdy
+
+        # Adds the arrow, this one doesn't take into account the elements in his path.
+        add_straight_arrow(self, ido, idd, xo, yo, xd, yd, self.options.Direction)
 
 if __name__ == '__main__':
     Constructor().run()

@@ -3,7 +3,7 @@
     xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>New Path</name>
     <id>new.path</id>
-        <param name="direction" type="bool" gui-text="Reverse direction of the arrow">False</param>
+        <param name="direction" type="bool" gui-text="Reverse direction of the arrow">false</param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
