@@ -2,7 +2,7 @@ from operator import length_hint
 from tokenize import group
 from wsgiref.util import request_uri
 import inkex, re
-from inkex import TextElement, PathElement, Rectangle
+from inkex import TextElement, PathElement, Rectangle, BaseElement
 from re import S
 
 # Font size for all text created by the extension.
@@ -89,15 +89,21 @@ def add_reaction(self, id, reaction, enzime, x, y, radius):
     svg_font_size = svg_format(self, font_size, 'pt')
 
     # Creates a group and adds all components to it.
-    reac = inkex.Group(id = id)
-    reac.add(add_elipse(x, y, radius, 'yellow'))
-    reac.add(add_text(x - len(id), y - 3, svg_font_size, id))
-    reac.add(add_text(x - len(reaction) - 2, y + 1, svg_font_size, 'R' + reaction))
-    reac.add(add_text(x - len(enzime), y + 5, svg_font_size, enzime))
+    group = inkex.Group(id = id)
+    group.add(add_elipse(x, y, radius, 'yellow'))
+    group.add(add_text(x - len(id), y - 3, svg_font_size, id))
+    group.add(add_text(x - len(reaction) - 2, y + 1, svg_font_size, 'R' + reaction))
+    group.add(add_text(x - len(enzime), y + 5, svg_font_size, enzime))
+
+    #Values.
+    group.set('id', 'R ' + str(id))
+    group.set('x', x)
+    group.set('y', y)
+    group.set('size', radius)
 
     # Adds it to the current layer.
     layer = self.svg.get_current_layer()
-    layer.add(reac)
+    layer.add(group)
 
 # Generates a new inverse reaction in the current layer.
 def add_inverse_reaction(self, id, reaction, enzime, x, y, radius):
@@ -110,11 +116,17 @@ def add_inverse_reaction(self, id, reaction, enzime, x, y, radius):
     svg_font_size = svg_format(self, font_size, 'pt')
 
     # Creates a group and adds all components to it.
-    group = inkex.Group(id = id)
+    group = inkex.Group()
     group.add(add_elipse(x, y, radius, '#c1b2ff'))
     group.add(add_text(x - len(id), y - 3, svg_font_size, id))
     group.add(add_text(x - len(reaction) - 5, y + 1, svg_font_size, 'R' + reaction + '_rev'))
     group.add(add_text(x - len(enzime), y + 5, svg_font_size, enzime))
+
+    #Values.
+    group.set('id', 'R ' + str(id))
+    group.set('x', x)
+    group.set('y', y)
+    group.set('size', radius)
 
     # Adds it to the current layer.
     layer = self.svg.get_current_layer()
@@ -131,12 +143,18 @@ def add_elemental_reaction(self, id, reaction, enzime, x, y, radius):
     svg_font_size = svg_format(self, font_size, 'pt')
 
     # Creates a group and adds all components to it.
-    group = inkex.Group(id = id)
+    group = inkex.Group()
     group.add(add_octogon(x, y, radius, 'yellow'))
     group.add(add_octogon(x, y, radius + 1, 'none'))
     group.add(add_text(x - len(id), y - 3, svg_font_size, id))
     group.add(add_text(x - len(reaction) - 2, y + 1, svg_font_size, 'R' + reaction))
     group.add(add_text(x - len(enzime), y + 5, svg_font_size, enzime))
+
+    #Values.
+    group.set('id', 'E ' + str(id))
+    group.set('x', x)
+    group.set('y', y)
+    group.set('size', radius)
 
     # Adds it to the current layer.
     layer = self.svg.get_current_layer()
@@ -157,9 +175,15 @@ def add_component(self, component, x, y, size):
     group.add(add_rectangle(x - (size/2), y - (size/6), size/3, size))
     group.add(add_text(x - len(component) - 2, y + 1 , svg_font_size, 'C' + component))
 
+    #Values.
+    group.set('x', x - (size/2))
+    group.set('y', y - (size/6))
+    group.set('size', size)
+
     # Gets the current layer and adds the group to it.
     layer = self.svg.get_current_layer()
     layer.add(group)
+    BaseElement.set_random_id(group, prefix = 'C ')
 
 # Checks if the id is not used in the svg.
 def check_unique_id(self, id):
