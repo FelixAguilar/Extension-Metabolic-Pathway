@@ -27,6 +27,7 @@ def is_elemental_reaction(string):
 def get_component_center(ID, center, size):
     if(is_component(ID)):
         return (center[0] + (size / 2), center[1] + (size / 6))
+    return center
 
 def get_transformation(element):
     t = str(element.get('transform'))
@@ -109,7 +110,17 @@ def get_rectangle_size(size, angle):
         return (center_base, abs(center_hight * sin(angle * (pi / 180))))
 
 def get_octogon_size(size, angle):
-    return
+    
+    size += 1
+    angle = abs(angle)
+    hight = size * cos(22.5 * (pi / 180))
+
+    if (angle < 22.5 or angle > 157.5):
+        return (hight, abs(hight * sin(angle * (pi / 180))))
+    elif (angle > 67.5 and angle < 112.5):
+        return (abs(hight * cos(angle * (pi / 180))), hight)
+    else:
+        return (abs(hight * cos(angle * (pi / 180))), abs(hight * sin(angle * (pi / 180))))
 
 def get_size(ID, size, angle):
     if(is_component(ID)):
@@ -174,8 +185,8 @@ class Constructor(inkex.EffectExtension):
         center_B = (center_B[0] + t[0], center_B[1] + t[1])
 
         # If it is a component, get the center of it.
-        get_component_center(id_A, center_A, size_A)
-        get_component_center(id_B, center_B, size_B)
+        center_A = get_component_center(id_A, center_A, size_A)
+        center_B = get_component_center(id_B, center_B, size_B)
         
         # Gets the angle of the line between the two elements.
         angle = get_angle_line(center_B, center_A)
