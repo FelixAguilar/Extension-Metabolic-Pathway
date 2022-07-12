@@ -189,16 +189,20 @@ def add_component(self, component, x, y, size):
 def check_unique_id(self, id):
 
     # Patern that verifies it is a number.
-    pattern = re.compile("[0-9]+")
-
+    pattern = re.compile("[E|M|R] [0-9]+")
+    
     # Gets all ids in the svg.
-    svg_ids = self.svg.get_ids()
+    svg_ids = []
+    for svg_id in self.svg.get_ids():
+        if(pattern.match(svg_id)):
+              svg_ids.append(svg_id)
 
     # Iterates through all the ids for a equal id.
     for svg_id in svg_ids:
-        if(pattern.match(svg_id) and svg_id == id):
-            return False
-    return True
+        svg_id = svg_id[2:]
+        if(svg_id == id):
+            return True
+    return False
 
 class Constructor(inkex.EffectExtension):
     def add_arguments(self, pars):
@@ -227,7 +231,7 @@ class Constructor(inkex.EffectExtension):
                 if (self.options.ID_M == 'undefined' or self.options.KEGG_reaction_M == 'undefined' or self.options.KEGG_enzime_M == 'undefined'):
                     inkex.errormsg('ID, reaction or enzime code has not been defined for the reaction.')
                 else:
-                    if(not check_unique_id(self, self.options.ID_M)):
+                    if(check_unique_id(self, self.options.ID_M)):
                         inkex.errormsg('The ID is already in use, please change it to another number.')
                     else:    
                         add_reaction(self, self.options.ID_M, self.options.KEGG_reaction_M, self.options.KEGG_enzime_M, self.options.x_M, self.options.y_M, self.options.size_M)
@@ -237,7 +241,7 @@ class Constructor(inkex.EffectExtension):
                 if (self.options.ID_M == 'undefined' or self.options.KEGG_reaction_M == 'undefined' or self.options.KEGG_enzime_M == 'undefined'):
                     inkex.errormsg('ID, reaction or enzime code has not been defined for the elemental reaction.')
                 else:
-                    if(not check_unique_id(self, self.options.ID_M)):
+                    if(check_unique_id(self, self.options.ID_M)):
                         inkex.errormsg('The ID is already in use, please change it to another number.')
                     else:   
                         add_elemental_reaction(self, self.options.ID_M, self.options.KEGG_reaction_M, self.options.KEGG_enzime_M, self.options.x_M, self.options.y_M, self.options.size_M)
@@ -247,7 +251,7 @@ class Constructor(inkex.EffectExtension):
                 if(self.options.ID_M == 'undefined'):
                     inkex.errormsg('ID for metabolic building block has not been defined.')
                 else:
-                    if(not check_unique_id(self, self.options.ID_M)):
+                    if(check_unique_id(self, self.options.ID_M)):
                         inkex.errormsg('The ID is already in use, please change it to another number.')
                     else:   
                         add_metabolic_building_block(self, self.options.ID_M, self.options.x_M, self.options.y_M, self.options.size_M)
@@ -258,7 +262,7 @@ class Constructor(inkex.EffectExtension):
                 if (self.options.ID_R == 'undefined' or self.options.KEGG_reaction_R == 'undefined' or self.options.KEGG_enzime_R == 'undefined'):
                     inkex.errormsg('ID, reaction or enzime code has not been defined for the reaction.')
                 else:
-                    if(not check_unique_id(self, self.options.ID_R)):
+                    if(check_unique_id(self, self.options.ID_R)):
                         inkex.errormsg('The ID is already in use, please change it to another number.')
                     else:   
                         add_reaction(self, self.options.ID_R, self.options.KEGG_reaction_R, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R)
@@ -275,7 +279,7 @@ class Constructor(inkex.EffectExtension):
                 if (self.options.ID_R == 'undefined' or self.options.KEGG_reaction_R == 'undefined' or self.options.KEGG_enzime_R == 'undefined'):
                     inkex.errormsg('ID, reaction or enzime code has not been defined for the inverse reaction.')
                 else:
-                    if(not check_unique_id(self, self.options.ID_R)):
+                    if(check_unique_id(self, self.options.ID_R)):
                         inkex.errormsg('The ID is already in use, please change it to another number.')
                     else: 
                         add_inverse_reaction(self, self.options.ID_R, self.options.KEGG_reaction_R, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R)
