@@ -4,7 +4,7 @@ from Add_Arrow import add_arrow
 
 # Checks is the element given is a metabolic path way.
 def is_metabolic_pathway_element(svg_element):
-    pattern = re.compile("[E|I|M|C|R] [0-9]+")
+    pattern = re.compile("[E|M|C|R] [0-9]+")
     if(pattern.match(svg_element.get_id())):
             return True
     return False

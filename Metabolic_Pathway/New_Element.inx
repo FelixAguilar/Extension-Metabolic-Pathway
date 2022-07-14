@@ -30,9 +30,6 @@
             <param name="y_R" type="int"  min="0" max="10000" gui-text="Position of the element on Y: ">10</param>
             <param name="size_R" type="int" min="0" max="180" gui-text="Size of the element: ">10</param>
         </page>
-        <page name="h" gui-text="Help">
-             <label>This extension is used to create a component of a Metabolic Pathway, it will be created in the canvas at the center of the screen, it can be disabled and will apear insteed at the top left corner.</label>
-        </page>
     </param>
 
     <effect>
@@ -44,4 +41,4 @@
     <script>
         <command location="inx" interpreter="python">New_Element.py</command>
     </script>
-</inkscape-extension>
+</inkscape-extension> 

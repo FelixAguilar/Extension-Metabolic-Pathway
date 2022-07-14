@@ -68,7 +68,7 @@ def add_metabolic_building_block(self, id, x, y, radius):
     group.add(add_text(x - 4, y - 1, svg_font_size, 'MBB'))
     group.add(add_text(x - len(id), y + 4, svg_font_size, id))
 
-    #Values.
+    # Values for the group.
     group.set('id', 'M ' + str(id))
     group.set('x', x)
     group.set('y', y)
@@ -95,7 +95,7 @@ def add_reaction(self, id, reaction, enzime, x, y, radius):
     group.add(add_text(x - len(reaction) - 2, y + 1, svg_font_size, 'R' + reaction))
     group.add(add_text(x - len(enzime), y + 5, svg_font_size, enzime))
 
-    #Values.
+    # Values for the group.
     group.set('id', 'R ' + str(id))
     group.set('x', x)
     group.set('y', y)
@@ -122,8 +122,8 @@ def add_inverse_reaction(self, id, reaction, enzime, x, y, radius):
     group.add(add_text(x - len(reaction) - 5, y + 1, svg_font_size, 'R' + reaction + '_rev'))
     group.add(add_text(x - len(enzime), y + 5, svg_font_size, enzime))
 
-    #Values.
-    group.set('id', 'R ' + str(id))
+    # Values for the group.
+    group.set('id', 'I ' + str(id))
     group.set('x', x)
     group.set('y', y)
     group.set('size', radius)
@@ -150,7 +150,7 @@ def add_elemental_reaction(self, id, reaction, enzime, x, y, radius):
     group.add(add_text(x - len(reaction) - 2, y + 1, svg_font_size, 'R' + reaction))
     group.add(add_text(x - len(enzime), y + 5, svg_font_size, enzime))
 
-    #Values.
+    # Values for the group.
     group.set('id', 'E ' + str(id))
     group.set('x', x)
     group.set('y', y)
@@ -175,7 +175,7 @@ def add_component(self, component, x, y, size):
     group.add(add_rectangle(x - (size/2), y - (size/6), size/3, size))
     group.add(add_text(x - len(component) - 2, y + 1 , svg_font_size, 'C' + component))
 
-    #Values.
+    # Values for the group.
     group.set('x', x - (size/2))
     group.set('y', y - (size/6))
     group.set('size', size)
@@ -189,7 +189,7 @@ def add_component(self, component, x, y, size):
 def check_unique_id(self, id):
 
     # Patern that verifies it is a number.
-    pattern = re.compile("[E|M|R] [0-9]+")
+    pattern = re.compile("[E|M|I|R] [0-9]+")
     
     # Gets all ids in the svg.
     svg_ids = []
@@ -205,6 +205,7 @@ def check_unique_id(self, id):
     return False
 
 class Constructor(inkex.EffectExtension):
+    
     def add_arguments(self, pars):
         pars.add_argument('--ID_M', type=str, default='undefined', dest='ID_M', help="ID of element MDAG")
         pars.add_argument('--ID_R', type=str, default='undefined', dest='ID_R', help="ID of element RC")
