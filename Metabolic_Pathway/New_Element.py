@@ -5,6 +5,15 @@ import inkex, re
 from inkex import TextElement, PathElement, Rectangle, BaseElement
 from re import S
 
+# error messages for the gui.
+error_id = 'The element code is already in use, please change it to another number.'
+error_format_id = 'The element code format is incorrect it has to be numeric.'
+error_format_reaction = 'The reaction code format is incorrect it has to be numeric.'
+error_format_enzime = 'The enzime code format is incorrect, a example will be "0.0.0.0".'
+error_empty_fields = 'The element, reaction  or enzime code has not been defined for the reaction.'
+error_empty_fields_mmb = 'The element code for metabolic building block has not been defined.'
+error_empty_fields_component = 'The reaction code for the component has not been defined.'
+
 # Font size for all text created by the extension.
 font_size = 10
 
@@ -201,7 +210,24 @@ def check_unique_id(self, id):
     for svg_id in svg_ids:
         svg_id = svg_id[2:]
         if(svg_id == id):
-            return True
+            inkex.errormsg(error_id)
+            return False
+    return True
+
+def check_format_numeric(string, error):
+
+    if(string.isnumeric()):
+        return True
+    inkex.errormsg(error)
+    return False
+
+def check_format_enzime(string):
+    
+    # Patern that verifies it is a enxime.
+    pattern = re.compile("[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")
+    if(pattern.match(string)):
+        return True
+    inkex.errormsg(error_format_enzime)
     return False
 
 class Constructor(inkex.EffectExtension):
@@ -230,59 +256,63 @@ class Constructor(inkex.EffectExtension):
 
                 # New reaction for MDAG.
                 if (self.options.ID_M == 'undefined' or self.options.KEGG_reaction_M == 'undefined' or self.options.KEGG_enzime_M == 'undefined'):
-                    inkex.errormsg('ID, reaction or enzime code has not been defined for the reaction.')
+                    inkex.errormsg(error_empty_fields)
                 else:
-                    if(check_unique_id(self, self.options.ID_M)):
-                        inkex.errormsg('The ID is already in use, please change it to another number.')
-                    else:    
+                    if(check_format_numeric(self.options.ID_M, error_format_id) and 
+                    check_unique_id(self, self.options.ID_M) and 
+                    check_format_numeric(self.options.KEGG_reaction_M, error_format_reaction) and
+                    check_format_enzime(self.options.KEGG_enzime_M)):    
                         add_reaction(self, self.options.ID_M, self.options.KEGG_reaction_M, self.options.KEGG_enzime_M, self.options.x_M, self.options.y_M, self.options.size_M)
             elif self.options.type_M == 'Elemental_Reactions':
 
                 # New elemental reaction for MDAG.
                 if (self.options.ID_M == 'undefined' or self.options.KEGG_reaction_M == 'undefined' or self.options.KEGG_enzime_M == 'undefined'):
-                    inkex.errormsg('ID, reaction or enzime code has not been defined for the elemental reaction.')
+                    inkex.errormsg(error_empty_fields)
                 else:
-                    if(check_unique_id(self, self.options.ID_M)):
-                        inkex.errormsg('The ID is already in use, please change it to another number.')
-                    else:   
+                    if(check_format_numeric(self.options.ID_M, error_format_id) and 
+                    check_unique_id(self, self.options.ID_M) and 
+                    check_format_numeric(self.options.KEGG_reaction_M, error_format_reaction) and
+                    check_format_enzime(self.options.KEGG_enzime_M)):     
                         add_elemental_reaction(self, self.options.ID_M, self.options.KEGG_reaction_M, self.options.KEGG_enzime_M, self.options.x_M, self.options.y_M, self.options.size_M)
             else:
 
                 # New metabolic building block for MDAG.
                 if(self.options.ID_M == 'undefined'):
-                    inkex.errormsg('ID for metabolic building block has not been defined.')
+                    inkex.errormsg(error_empty_fields_mmb)
                 else:
-                    if(check_unique_id(self, self.options.ID_M)):
-                        inkex.errormsg('The ID is already in use, please change it to another number.')
-                    else:   
+                    if(check_format_numeric(self.options.ID_M, error_format_id) and 
+                    check_unique_id(self, self.options.ID_M)): 
                         add_metabolic_building_block(self, self.options.ID_M, self.options.x_M, self.options.y_M, self.options.size_M)
         else:
             if self.options.type_R == 'Reactions':
 
                 # New reaction for RC.
                 if (self.options.ID_R == 'undefined' or self.options.KEGG_reaction_R == 'undefined' or self.options.KEGG_enzime_R == 'undefined'):
-                    inkex.errormsg('ID, reaction or enzime code has not been defined for the reaction.')
+                    inkex.errormsg(error_empty_fields)
                 else:
-                    if(check_unique_id(self, self.options.ID_R)):
-                        inkex.errormsg('The ID is already in use, please change it to another number.')
-                    else:   
+                    if(check_format_numeric(self.options.ID_R, error_format_id) and 
+                    check_unique_id(self, self.options.ID_R) and 
+                    check_format_numeric(self.options.KEGG_reaction_R, error_format_reaction) and
+                    check_format_enzime(self.options.KEGG_enzime_R)):     
                         add_reaction(self, self.options.ID_R, self.options.KEGG_reaction_R, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R)
             elif self.options.type_R == 'Component':
 
                 # New component for RC.
                 if (self.options.KEGG_reaction_R == 'undefined'):
-                    inkex.errormsg('component code has not been defined for the reaction.')
+                    inkex.errormsg(error_empty_fields_component)
                 else:
-                    add_component(self, self.options.KEGG_reaction_R, self.options.x_R, self.options.y_R, self.options.size_R)
+                    if(check_format_numeric(self.options.KEGG_reaction_R, error_format_reaction)):
+                        add_component(self, self.options.KEGG_reaction_R, self.options.x_R, self.options.y_R, self.options.size_R)
             else:
                 
                 # New inverse reaction for RC.
                 if (self.options.ID_R == 'undefined' or self.options.KEGG_reaction_R == 'undefined' or self.options.KEGG_enzime_R == 'undefined'):
-                    inkex.errormsg('ID, reaction or enzime code has not been defined for the inverse reaction.')
+                    inkex.errormsg(error_empty_fields)
                 else:
-                    if(check_unique_id(self, self.options.ID_R)):
-                        inkex.errormsg('The ID is already in use, please change it to another number.')
-                    else: 
+                    if(check_format_numeric(self.options.ID_R, error_format_id) and 
+                    check_unique_id(self, self.options.ID_R) and 
+                    check_format_numeric(self.options.KEGG_reaction_R, error_format_reaction) and
+                    check_format_enzime(self.options.KEGG_enzime_R)):     
                         add_inverse_reaction(self, self.options.ID_R, self.options.KEGG_reaction_R, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R)
 
 if __name__ == '__main__':
