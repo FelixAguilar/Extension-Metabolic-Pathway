@@ -1,43 +1,50 @@
-<?xml version="1.0" encoding="UTF-8"?>
 
+<?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>About</name>
     <id>metabolic.pathway.about</id>
-    <param name='active-tab' type="notebook">
-
-        <page name='about' gui-text='About'>
-            <label xml:space="preserve">Gcodetools was developed to make simple Gcode from Inkscape's paths. Gcode is a special format which is used in most of CNC machines. So Gcodetools allows you to use Inkscape as CAM program.
-
-It can be used with a lot of machine types:
-    Mills
-    Lathes
-    Laser and Plasma cutters and engravers
-    Mill engravers
-    Plotters
-    etc.
-
-To get more info visit developers page at http://www.cnc-club.ru/gcodetools</label>
-        </page>
-
-        <page name='help' gui-text='Help'>
+    <param name='tab' type="notebook">
+        <page name='about' gui-text='Acerca de'>
             <label xml:space="preserve">
-Gcodetools plug-in:
-Converts paths to Gcode (using circular interpolation), makes offset paths and engraves sharp corners using cone cutters.
-This plug-in calculates Gcode for paths using circular interpolation or linear motion when needed.
+Este conjunto de extensiones han sido creadas por Felix Aguilar como parte del
+Trabajo de Fin de Grado (TFG).
 
-Tutorials, manuals and support can be found at
-English support forum:
-    http://www.cnc-club.ru/gcodetools
+Estas facilitan la creación y modificación de rutas metabolicas por parte del
+usuario, añadiendo diferentes funcionalidades. En las otras pestañas de aqui, 
+se encuentra la explicación del funcionamiento de las diferentes extensiones.
 
-and Russian support forum:
-    http://www.cnc-club.ru/gcodetoolsru
-
-Credits: Nick Drobchenko, Vladimir Kalyaev, John Brooker, Henry Nicolas, Chris Lusby Taylor.
-
-Gcodetools ver. 1.7
-</label>
-
+Git Hub: https://github.com/FelixAguilar/Extension-Metabolic-Pathway
+            </label>
         </page>
+
+        <page name='new_element' gui-text='Nuevo Elemento'>
+            <label xml:space="preserve">
+            
+            </label>
+        </page>
+
+        <page name='change_size' gui-text='Cambiar Tamaño'>
+            <label xml:space="preserve">
+            
+            </label>
+        </page>
+
+        <page name='new_path' gui-text='Nuevo Camino'>
+            <label xml:space="preserve">
+Esta extension permite al usuario añadir un camino entre dos elementos de la
+Ruta Metabolica, para ello antes de ejecutarla hay que seleccionar dos 
+elementos con el cursor que no tengan ya un camino entre ellos en esa 
+dirección. Una vez decidido este se ejecuta y permitirá indicar si se quiere 
+alterar la dirección de este camino, una vez decidido, este creará un camino 
+entre ambos puntos.
+            </label>
+        </page>
+
+        <page name='move_paths' gui-text='Mover Caminos'>
+            <label xml:space="preserve">
+            </label>
+        </page>
+
 
     </param>
     <effect>
