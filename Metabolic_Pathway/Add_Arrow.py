@@ -12,10 +12,6 @@ def is_elemental_reaction(string):
     if(pattern.match(string)):
             return True
     return False
-def get_component_center(ID, center, size):
-    if(is_component(ID)):
-        return (center[0] + (size / 2), center[1] + (size / 6))
-    return center
 def get_transformation(element):
     t = str(element.get('transform'))
 
@@ -134,15 +130,11 @@ def add_arrow(self, element_A, element_B, direction):
     size_B = float(element_B.get('size'))
     id_B = element_B.get_id()
 
-        # Gets the transformations of the elements if there are, and applies them.
+    # Gets the transformations of the elements if there are, and applies them.
     t = get_transformation(element_A)
     center_A = (center_A[0] + t[0], center_A[1] + t[1])
     t = get_transformation(element_B)
     center_B = (center_B[0] + t[0], center_B[1] + t[1])
-
-    # If it is a component, get the center of it.
-    center_A = get_component_center(id_A, center_A, size_A)
-    center_B = get_component_center(id_B, center_B, size_B)
         
     # Gets the angle of the line between the two elements.
     angle = get_angle_line(center_B, center_A)

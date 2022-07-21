@@ -157,7 +157,7 @@ def add_elemental_reaction(self, id, reaction, enzime, x, y, radius):
     layer.add(group)
 
 # Generates a new component in the current layer.
-def add_component(self, component, x, y, size):
+def add_component(self, component, x, y, size, id = None):
 
     # Minimum size for a component.
     if(size < 13):
@@ -172,11 +172,15 @@ def add_component(self, component, x, y, size):
     group.add(add_text(x - len(component) - 2, y + 1 , svg_font_size, 'C' + component))
 
     # Values for the group.
-    group.set('x', x - (size/2))
-    group.set('y', y - (size/6))
+    if(id != None):
+        group.set('id', 'C ' + str(id))
+    group.set('x', x)
+    group.set('y', y)
     group.set('size', size)
 
     # Gets the current layer and adds the group to it.
     layer = self.svg.get_current_layer()
     layer.add(group)
-    BaseElement.set_random_id(group, prefix = 'C ')
+
+    if(id == None):
+        BaseElement.set_random_id(group, prefix = 'C ')
