@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension 
+    xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>New Element</name>
+    <id>new.element</id>
+    <param name="tab" type="notebook">
+        <page name="DAG" gui-text="Metabolic-DAG">
+            <param name="type_M" type="optiongroup" appearance="combo" gui-text="Type of Element: ">  ➎
+                <option value="Reactions">Reaction</option>
+                <option value="Elemental_Reactions">Elemental Reaction</option>
+                <option value="Metabolic_Building_Block">Metabolic Building Block</option>
+            </param>
+            <param name="ID_M" type="string" gui-text="ID of the element: ">1</param>
+            <param name="KEGG_reaction_M" type="string" gui-text="ID of the reaction in KEGG: ">R1234</param>
+            <param name="KEGG_enzime_M" type="string" gui-text="ID of the enzime in KEGG: ">1.1.1.1</param>
+            <param name="x_M" type="int"  min="0" max="10000" gui-text="Position of the element on X: ">10</param>
+            <param name="y_M" type="int"  min="0" max="10000" gui-text="Position of the element on Y: ">10</param>
+            <param name="size_M" type="int" min="0" max="180" gui-text="Size of the element: ">10</param>
+        </page>
+        <page name="RC" gui-text="Reference-Compound">
+            <param name="type_R" type="optiongroup" appearance="combo" gui-text="Type of Element:">  ➎
+                <option value="Reactions">Reaction</option>
+                <option value="Component">Component</option>
+                <option value="Inverse_Reaction">Inverse Reaction</option>
+            </param>
+            <param name="ID_R" type="string" gui-text="ID of the element: ">1</param>
+            <param name="KEGG_reaction_R" type="string" gui-text="ID of the reaction in KEGG: ">R1234</param>
+            <param name="KEGG_enzime_R" type="string" gui-text="ID of the enzime in KEGG: ">1.1.1.1</param>
+            <param name="x_R" type="int"  min="0" max="10000" gui-text="Position of the element on X: ">10</param>
+            <param name="y_R" type="int"  min="0" max="10000" gui-text="Position of the element on Y: ">10</param>
+            <param name="size_R" type="int" min="0" max="180" gui-text="Size of the element: ">10</param>
+        </page>
+    </param>
+
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="Metabolic Pathways"/>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">../New_Element.py</command>
+    </script>
+</inkscape-extension> 

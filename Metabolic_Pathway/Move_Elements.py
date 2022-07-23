@@ -1,5 +1,5 @@
-import inkex, re, Add_Arrow
-from Add_Arrow import add_arrow
+import inkex, re
+from shared.Add_Arrow import add_arrow
 
 class Constructor(inkex.EffectExtension):
     

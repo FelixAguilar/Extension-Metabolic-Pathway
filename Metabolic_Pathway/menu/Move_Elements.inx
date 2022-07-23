@@ -10,6 +10,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command location="inx" interpreter="python">Move_Elements.py</command>
+        <command location="inx" interpreter="python">../Move_Elements.py</command>
     </script>
 </inkscape-extension>

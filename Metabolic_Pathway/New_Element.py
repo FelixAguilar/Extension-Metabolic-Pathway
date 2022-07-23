@@ -1,16 +1,6 @@
-import inkex, re, Add_Element
-from re import S
-from Add_Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
-
-
-# error messages for the gui.
-error_id = 'The element code is already in use, please change it to another number.'
-error_format_id = 'The element code format is incorrect it has to be numeric.'
-error_format_reaction = 'The reaction code format is incorrect it has to be numeric.'
-error_format_enzime = 'The enzime code format is incorrect, a example will be "0.0.0.0".'
-error_empty_fields = 'The element, reaction  or enzime code has not been defined for the reaction.'
-error_empty_fields_mmb = 'The element code for metabolic building block has not been defined.'
-error_empty_fields_component = 'The reaction code for the component has not been defined.'
+import inkex, re
+from shared.Add_Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
+from shared.errors import *
 
 # Checks if the id is not used in the svg.
 def check_unique_id(self, id):

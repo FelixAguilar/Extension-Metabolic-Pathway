@@ -54,6 +54,6 @@ entre ambos puntos.
         </effects-menu>
     </effect>
     <script>
-        <command location="inx" interpreter="python">About.py</command>
+        <command location="inx" interpreter="python">../About.py</command>
     </script>
 </inkscape-extension>
