@@ -1,6 +1,6 @@
-import inkex, re, Add_Arrow
-from re import S, T
-from Add_Arrow import add_arrow
+import inkex, re
+from shared.Add_Arrow import add_arrow
+from shared.errors import *
 
 # Checks is the element given is a metabolic path way.
 def is_metabolic_pathway_element(svg_element):
@@ -30,12 +30,23 @@ class Constructor(inkex.EffectExtension):
                 inkex.errormsg('The selected elements do not belong to a metabolic pathway or it is a pathway of it.')
                 return
 
-        # Verifies that there is not another path between these two.
-        """ a hacer """
-
         # Obtains the elements from the selections.
         element_A = self.svg.selection[0]
         element_B = self.svg.selection[1]
+
+        # Verifies that there is not another path between these two.
+        paths = []
+        all_ids = self.svg.get_ids()
+        pattern = re.compile("P [0-9]+")
+        for id in all_ids:
+            if(pattern.match(id)):
+                paths.append(id)
+
+        for path_id in paths:
+            path = self.svg.getElementById(path_id)
+            if(path.get('id_dest') == element_A.get_id() and path.get('id_orig') == element_B.get_id()):
+                inkex.errormsg("Path exist in this direction.")
+                return
 
         # Draws an arrow between elements.
         add_arrow(self, element_B, element_A, self.options.Direction)
