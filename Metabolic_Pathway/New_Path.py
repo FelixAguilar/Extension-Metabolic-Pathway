@@ -45,7 +45,7 @@ class Constructor(inkex.EffectExtension):
         for path_id in paths:
             path = self.svg.getElementById(path_id)
             if(path.get('id_dest') == element_A.get_id() and path.get('id_orig') == element_B.get_id()):
-                inkex.errormsg("Path exist in this direction.")
+                inkex.errormsg("Path exist between " + element_B.get_id() + " and " + element_A.get_id() + " in this direction.")
                 return
 
         # Draws an arrow between elements.
