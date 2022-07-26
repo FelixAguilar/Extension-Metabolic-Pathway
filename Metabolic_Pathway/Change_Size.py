@@ -1,7 +1,7 @@
-import inkex, re, Add_Element, Move_Arrows
+import inkex, re
 from re import S, T
-from Add_Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
-from Move_Arrows import move_arrows
+from shared.Add_Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
+from shared.Move_Arrows import move_arrows
 
 # Checks is the element given is a metabolic path way.
 def is_metabolic_pathway_element(svg_element):
@@ -82,13 +82,15 @@ class Constructor(inkex.EffectExtension):
 
         # Creates the element.
         if(id.find('R') != -1):
-            add_reaction(self, texts[0], texts[1], texts[2], x, y, size)
+            id = id[2:]
+            add_reaction(self, texts[0], texts[1], texts[2], x, y, size, g_id = id)
         elif(id.find('E') != -1):
             add_elemental_reaction(self, texts[0], texts[1], texts[2], x, y, size)
         elif(id.find('M') != -1):
             add_metabolic_building_block(self,  texts[0], x, y, size)
         elif(id.find('I') != -1):
-            add_inverse_reaction(self, texts[0], texts[1], texts[2], x, y, size)
+            id = id[2:]
+            add_inverse_reaction(self, texts[0], texts[1], texts[2], x, y, size, g_id = id)
         elif(id.find('C') != -1):
             id = id[2:]
             add_component(self, texts[0], x, y, size, id)

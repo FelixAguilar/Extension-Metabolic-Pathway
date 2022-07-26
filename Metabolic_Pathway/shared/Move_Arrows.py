@@ -1,6 +1,6 @@
-import inkex, re, Add_Arrow
+import inkex, re
 from re import S, T
-from Add_Arrow import add_arrow
+from shared.Add_Arrow import add_arrow
 
 def move_arrows(self):
 

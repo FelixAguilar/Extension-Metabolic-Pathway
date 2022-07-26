@@ -75,7 +75,7 @@ def add_metabolic_building_block(self, id, x, y, radius):
     layer.add(group)
 
 # Generates a new reaction in the current layer.
-def add_reaction(self, id, reaction, enzime, x, y, radius):
+def add_reaction(self, id, reaction, enzime, x, y, radius, unique = True, g_id = None):
 
     # Minimum size of component is 9.
     if(radius < 9):
@@ -92,7 +92,10 @@ def add_reaction(self, id, reaction, enzime, x, y, radius):
     group.add(add_text(x - len(enzime), y + 5, svg_font_size, enzime))
 
     # Values for the group.
-    group.set('id', 'R ' + str(id))
+    if(unique and g_id == None):
+        group.set('id', 'R ' + str(id))
+    if(g_id != None):
+        group.set('id', 'R ' + str(g_id))
     group.set('x', x)
     group.set('y', y)
     group.set('size', radius)
@@ -100,9 +103,11 @@ def add_reaction(self, id, reaction, enzime, x, y, radius):
     # Adds it to the current layer.
     layer = self.svg.get_current_layer()
     layer.add(group)
+    if(not unique):
+        BaseElement.set_random_id(group, prefix = 'R ')
 
 # Generates a new inverse reaction in the current layer.
-def add_inverse_reaction(self, id, reaction, enzime, x, y, radius):
+def add_inverse_reaction(self, id, reaction, enzime, x, y, radius, unique = True, g_id = None):
 
     # Minimum size of component is 11.
     if(radius < 11):
@@ -119,7 +124,10 @@ def add_inverse_reaction(self, id, reaction, enzime, x, y, radius):
     group.add(add_text(x - len(enzime), y + 5, svg_font_size, enzime))
 
     # Values for the group.
-    group.set('id', 'I ' + str(id))
+    if(unique and g_id == None):
+        group.set('id', 'I ' + str(id))
+    if(g_id != None):
+        group.set('id', 'I ' + str(g_id))
     group.set('x', x)
     group.set('y', y)
     group.set('size', radius)
@@ -127,6 +135,8 @@ def add_inverse_reaction(self, id, reaction, enzime, x, y, radius):
     # Adds it to the current layer.
     layer = self.svg.get_current_layer()
     layer.add(group)
+    if(not unique):
+        BaseElement.set_random_id(group, prefix = 'I ')
 
 # Generates a new elemental reaction in the current layer.
 def add_elemental_reaction(self, id, reaction, enzime, x, y, radius):

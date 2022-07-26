@@ -23,6 +23,7 @@
                 <option value="Component">Component</option>
                 <option value="Inverse_Reaction">Inverse Reaction</option>
             </param>
+            <param name="unique_R" type="bool" gui-text="ID of the element must be unique.">false</param>
             <param name="ID_R" type="string" gui-text="ID of the element: ">1</param>
             <param name="KEGG_reaction_R" type="string" gui-text="ID of the reaction in KEGG: ">R1234</param>
             <param name="KEGG_enzime_R" type="string" gui-text="ID of the enzime in KEGG: ">1.1.1.1</param>

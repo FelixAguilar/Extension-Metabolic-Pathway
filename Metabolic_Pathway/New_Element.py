@@ -1,3 +1,4 @@
+from email.policy import default
 import inkex, re
 from shared.Add_Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
 from shared.errors import *
@@ -56,6 +57,7 @@ class Constructor(inkex.EffectExtension):
         pars.add_argument('--y_R', type=int, default='30', dest='y_R', help="Position y of the element RC")
         pars.add_argument('--size_M', type=int, default='20', dest='size_M', help="Size of the element MDAG")
         pars.add_argument('--size_R', type=int, default='20', dest='size_R', help="Size of the element RC")
+        pars.add_argument('--unique_R', type=inkex.Boolean, default=False, dest='unique_R', help="If the element id needs to not be unique")
 
     def effect(self):
 
@@ -98,11 +100,15 @@ class Constructor(inkex.EffectExtension):
                 if (self.options.ID_R == 'undefined' or self.options.KEGG_reaction_R == 'undefined' or self.options.KEGG_enzime_R == 'undefined'):
                     inkex.errormsg(error_empty_fields)
                 else:
-                    if(check_format_numeric(self.options.ID_R, error_format_id) and 
-                    check_unique_id(self, self.options.ID_R) and 
+                    if(check_format_numeric(self.options.ID_R, error_format_id) and  
                     check_format_numeric(self.options.KEGG_reaction_R, error_format_reaction) and
-                    check_format_enzime(self.options.KEGG_enzime_R)):     
-                        add_reaction(self, self.options.ID_R, self.options.KEGG_reaction_R, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R)
+                    check_format_enzime(self.options.KEGG_enzime_R)):
+                        inkex.errormsg(self.options.unique_R)
+                        if(self.options.unique_R):
+                            if (check_unique_id(self, self.options.ID_R)):
+                                add_reaction(self, self.options.ID_R, self.options.KEGG_reaction_R, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R)
+                        else:
+                            add_reaction(self, self.options.ID_R, self.options.KEGG_reaction_R, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R, False)
             elif self.options.type_R == 'Component':
 
                 # New component for RC.
@@ -118,10 +124,12 @@ class Constructor(inkex.EffectExtension):
                     inkex.errormsg(error_empty_fields)
                 else:
                     if(check_format_numeric(self.options.ID_R, error_format_id) and 
-                    check_unique_id(self, self.options.ID_R) and 
                     check_format_numeric(self.options.KEGG_reaction_R, error_format_reaction) and
-                    check_format_enzime(self.options.KEGG_enzime_R)):     
-                        add_inverse_reaction(self, self.options.ID_R, self.options.KEGG_reaction_R, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R)
-
+                    check_format_enzime(self.options.KEGG_enzime_R)):
+                        if(self.options.unique_R):
+                            if (check_unique_id(self, self.options.ID_R)):
+                                add_inverse_reaction(self, self.options.ID_R, self.options.KEGG_reaction_R, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R)
+                        else:
+                            add_inverse_reaction(self, self.options.ID_R, self.options.KEGG_reaction_R, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R, False)
 if __name__ == '__main__':
     Constructor().run()
