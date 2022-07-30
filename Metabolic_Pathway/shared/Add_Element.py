@@ -71,8 +71,9 @@ def add_metabolic_building_block(self, id, x, y, radius):
     group.set('size', radius)
 
     # Adds it to the current layer.
-    layer = self.svg.get_current_layer()
-    layer.add(group)
+    #layer = self.svg.get_current_layer()
+    #layer.add(group)
+    return group
 
 # Generates a new reaction in the current layer.
 def add_reaction(self, id, reaction, enzime, x, y, radius, unique = True, g_id = None):
@@ -101,10 +102,12 @@ def add_reaction(self, id, reaction, enzime, x, y, radius, unique = True, g_id =
     group.set('size', radius)
 
     # Adds it to the current layer.
-    layer = self.svg.get_current_layer()
-    layer.add(group)
+    #layer = self.svg.get_current_layer()
+    #layer.add(group)
     if(not unique):
         BaseElement.set_random_id(group, prefix = 'R ')
+    return group
+
 
 # Generates a new inverse reaction in the current layer.
 def add_inverse_reaction(self, id, reaction, enzime, x, y, radius, unique = True, g_id = None):
@@ -133,10 +136,12 @@ def add_inverse_reaction(self, id, reaction, enzime, x, y, radius, unique = True
     group.set('size', radius)
 
     # Adds it to the current layer.
-    layer = self.svg.get_current_layer()
-    layer.add(group)
+    #layer = self.svg.get_current_layer()
+    #layer.add(group)
     if(not unique):
         BaseElement.set_random_id(group, prefix = 'I ')
+    return group
+
 
 # Generates a new elemental reaction in the current layer.
 def add_elemental_reaction(self, id, reaction, enzime, x, y, radius):
@@ -163,8 +168,10 @@ def add_elemental_reaction(self, id, reaction, enzime, x, y, radius):
     group.set('size', radius)
 
     # Adds it to the current layer.
-    layer = self.svg.get_current_layer()
-    layer.add(group)
+    #layer = self.svg.get_current_layer()
+    #layer.add(group)
+    return group
+
 
 # Generates a new component in the current layer.
 def add_component(self, component, x, y, size, id = None):
@@ -189,8 +196,10 @@ def add_component(self, component, x, y, size, id = None):
     group.set('size', size)
 
     # Gets the current layer and adds the group to it.
-    layer = self.svg.get_current_layer()
-    layer.add(group)
+    #layer = self.svg.get_current_layer()
+    #layer.add(group)
 
     if(id == None):
         BaseElement.set_random_id(group, prefix = 'C ')
+
+    return group

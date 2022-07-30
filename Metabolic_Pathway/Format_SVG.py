@@ -1,5 +1,7 @@
+from pathlib import Path
 import inkex, re, math
 from shared.Add_Element import add_metabolic_building_block, add_elemental_reaction, add_reaction, add_inverse_reaction, add_component
+from shared.Add_Arrow import add_arrow
 
 def format_num(string):
     separator = string.find(',')
@@ -7,6 +9,12 @@ def format_num(string):
         string = string[:separator-1] + '.' + string[separator+1:]
         return float(string)
     return float(string)
+
+def is_metabolic_pathway_element(svg_element):
+    pattern = re.compile("[E|I|M|C|R] [0-9]+")
+    if(pattern.match(svg_element.get_id())):
+            return True
+    return False
 
 def string_to_list(string):
     s_list = string.split(' ')
@@ -17,6 +25,29 @@ def string_to_list(string):
         y = float(s[1])
         f_list.append((x, y))
     return f_list
+
+class path:
+    def __init__(self, o, d) -> None:
+        self.o = o
+        self.d = d
+
+    def get_o(path):
+        return path.o
+
+    def get_d(path):
+        return path.d
+
+    def change_direction(path, head):
+        distance_oh = math.sqrt(math.pow(head[0] - path.o[0], 2) +  math.pow(head[1] - path.o[1], 2))
+        distance_dh = math.sqrt(math.pow(head[0] - path.d[0], 2) +  math.pow(head[1] - path.d[1], 2))
+
+        if(distance_oh < distance_dh):
+            aux = path.o
+            path.o = path.d
+            path.d = aux
+
+    def __str__(self) -> str:
+        return str(self.o) + " " + str(self.d)
 
 class Constructor(inkex.EffectExtension):
     
@@ -30,6 +61,10 @@ class Constructor(inkex.EffectExtension):
         pattern4 = re.compile("[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+")
         pattern5 = re.compile("[0-9]+")
         pattern6 = re.compile("C[0-9][0-9][0-9][0-9][0-9]")
+        pattern7 = re.compile("P [0-9]+")
+
+        lines = []
+        groups = []
 
         ids = []
         for id in self.svg.get_ids():
@@ -42,17 +77,32 @@ class Constructor(inkex.EffectExtension):
 
             # get element by ID and if is a group and it isn't a graph then get all child elements.
             element = self.svg.getElementById(id)
-            if(element.tag_name == 'g' and not pattern1.match(element.get_id())):
+            if(not pattern1.match(element.get_id()) and element.tag_name == 'g'):
                 for child in element.descendants():
                     if(child.tag_name == 'text'):
                         texts.append(child.text)
                 
-                    if(child.tag_name == 'ellipse' or child.tag_name == 'polygon'):
+                    if(child.tag_name == 'ellipse' or child.tag_name == 'polygon' or child.tag_name == 'path'):
                         figures.append(child.get_id())
                     
             if(not texts and figures):
                 # It is a path.
-                None     
+                for figure in figures:
+                    figure = self.svg.getElementById(figure)
+                    if(figure.tag_name == 'path'):
+                        line = figure.get('d')
+                        if (line.find('C') != -1):
+                            y_o = line[line.find(',') + 1:line.find('C')]
+                        else:
+                            y_o = line[line.find(',') + 1:line.find(' ')]
+                        o = (float(line[line.find('M') + 1:line.find(',')]), float(y_o))  
+                        d = (float(line[line.rfind(' ') + 1: line.rfind(',')]), float(line[line.rfind(',') + 1:]))
+                        lines.append(path(o,d))
+                    else:
+                        points = figure.get('points')
+                        point = (float(points[0:points.find(',')]), float(points[points.find(',') + 1: points.find(' ')]))
+                        lines[-1].change_direction(point)
+
             elif(texts and figures):
                 # It is a element.
 
@@ -92,20 +142,21 @@ class Constructor(inkex.EffectExtension):
                         position = (float(figure.get('cx')), float(figure.get('cy')))
                         size = max(format_num(figure.get('rx')), format_num(figure.get('ry')))
                     elif(figure.tag_name == 'polygon'):
+                        
+                        points = string_to_list(figure.get('points'))
 
                         # If it is a polygon and filled with the color yellow then it is a elemental reaction.
                         if(figure.get('fill') == 'yellow'):
-                            type_element = 'Elemental'
-                            points = string_to_list(figure.get('points'))
+                            type_element = 'Elemental'   
                             x_A = float(points[0][0])
                             y_A = float(points[0][1])
                             x_B = float(points[4][0])
                             y_B = float(points[4][1])
                             position = ((x_A + x_B) / 2, (y_A + y_B) /2)
                             size = math.sqrt(math.pow((x_A - x_B) / 2, 2) + math.pow((y_A - y_B) / 2, 2))
-                        else:
+                        elif(len(points) == 4):
                             # it is a compound.
-                            points = string_to_list(figure.get('points'))
+                            type_element = 'Compound'
                             x_A = float(points[0][0])
                             y_A = float(points[0][1])
                             x_B = float(points[2][0])
@@ -113,30 +164,49 @@ class Constructor(inkex.EffectExtension):
                             x_C = float(points[1][0])
                             position = ((x_A + x_B) / 2, (y_A + y_B) /2)
                             size = abs(x_A - x_C)
-                
-                # Debug text.
-                """if(type_element == "Inverse" or type_element == "Reaction" or type_element == "Elemental"):
-                    inkex.errormsg(type_element + " " + id_element + " " + str(reactions) + " " + enzime + " " + str(position) + " " + str(size))
-                elif(type_element == "MBB"):
-                    inkex.errormsg(type_element + " " + id_element + " " + str(position) + " " + str(size))"""
 
                 # Proceeds to draw the element.
                 if(type_element == 'MBB'):
-                    add_metabolic_building_block(self, id_element, position[0], position[1], size)
+                    groups.append(add_metabolic_building_block(self, id_element, position[0], position[1], size))
                 elif(type_element == 'Reaction'):
-                    add_reaction(self, id_element, reactions[0], enzime,  position[0], position[1], size)
+                    groups.append(add_reaction(self, id_element, reactions[0], enzime,  position[0], position[1], size))
                 elif(type_element == 'Elemental'):
-                    add_elemental_reaction(self, id_element, reactions[0], enzime, position[0], position[1], size)
+                    groups.append(add_elemental_reaction(self, id_element, reactions[0], enzime, position[0], position[1], size))
                 elif(type_element == 'Inverse'):
-                    add_inverse_reaction(self, id_element, reactions[0], enzime, position[0], position[1], size)
+                    groups.append(add_inverse_reaction(self, id_element, reactions[0], enzime, position[0], position[1], size))
                 elif(type_element == 'Compound'):
-                    add_component(self, name, position[0], position[1], size)
-                else:
-                    None
+                    groups.append(add_component(self, name, position[0], position[1], size))
 
-            else:
-                # Element that does not belong to a metabolic path way.
-                None
+        layer = self.svg.get_current_layer()
+        for group in groups:
+            layer.add(group)
 
+        i = 0
+        for line in lines:
+            nearest_orig = ""
+            nearest_dest = ""
+            distance_orig = float("inf")
+            distance_dest = float("inf")
+
+            i = 1 + i
+
+            for group in groups:
+                if(is_metabolic_pathway_element(group)):
+                    distance_o = math.sqrt(math.pow(float(group.get('x')) - line.o[0], 2) + math.pow(float(group.get('y')) - line.o[1], 2)) - float(group.get('size'))
+                    distance_d = math.sqrt(math.pow(float(group.get('x')) - line.d[0], 2) + math.pow(float(group.get('y')) - line.d[1], 2)) - float(group.get('size'))
+                    
+                    if(distance_dest >= distance_d):
+                        distance_dest = distance_d
+                        nearest_dest = group
+
+                    if(distance_orig >= distance_o):
+                        distance_orig = distance_o
+                        nearest_orig = group
+
+            if(nearest_dest != "" and nearest_orig != ""):
+                add_arrow(self, nearest_orig, nearest_dest, False)
+        
+        self.svg.getElementById('graph0').delete()
+            
 if __name__ == '__main__':
     Constructor().run()
