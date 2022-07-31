@@ -1,5 +1,6 @@
 from pathlib import Path
 import inkex, re, math
+from math import atan, atan2, sin, cos, pi
 from shared.Add_Element import add_metabolic_building_block, add_elemental_reaction, add_reaction, add_inverse_reaction, add_component
 from shared.Add_Arrow import add_arrow
 
@@ -9,13 +10,11 @@ def format_num(string):
         string = string[:separator-1] + '.' + string[separator+1:]
         return float(string)
     return float(string)
-
 def is_metabolic_pathway_element(svg_element):
     pattern = re.compile("[E|I|M|C|R] [0-9]+")
     if(pattern.match(svg_element.get_id())):
             return True
     return False
-
 def string_to_list(string):
     s_list = string.split(' ')
     f_list = []
@@ -25,6 +24,53 @@ def string_to_list(string):
         y = float(s[1])
         f_list.append((x, y))
     return f_list
+
+def is_component(ID):
+    pattern = re.compile("C [0-9]+")
+    if(pattern.match(ID)):
+        return True
+    return False
+def is_elemental_reaction(string):
+    pattern = re.compile("E [0-9]+")
+    if(pattern.match(string)):
+            return True
+    return False
+def get_circle_size(size, angle):
+    return (abs(size * cos(angle * (pi / 180))), abs(size * sin(angle * (pi / 180))))
+def get_rectangle_size(size, angle):
+
+    center_base = size / 2
+    center_hight = size / 6 
+
+    vertex_angle = atan(center_hight / center_base) * 180 / pi
+
+    if((angle > vertex_angle and angle < 180 - vertex_angle) or (angle < -vertex_angle and angle > vertex_angle - 180)):
+        return (abs(center_base * cos(angle * (pi / 180))), center_hight)
+    else:
+        return (center_base, abs(center_hight * sin(angle * (pi / 180))))
+def get_octogon_size(size, angle):
+    
+    size += 1
+    angle = abs(angle)
+    hight = size * cos(22.5 * (pi / 180))
+
+    if (angle < 22.5 or angle > 157.5):
+        return (hight, abs(hight * sin(angle * (pi / 180))))
+    elif (angle > 67.5 and angle < 112.5):
+        return (abs(hight * cos(angle * (pi / 180))), hight)
+    else:
+        return (abs(hight * cos(angle * (pi / 180))), abs(hight * sin(angle * (pi / 180))))
+def get_size(ID, size, angle):
+    if(is_component(ID)):
+        return get_rectangle_size(size, angle)
+    if(is_elemental_reaction(ID)):
+        return get_octogon_size(size, angle)
+    else:
+        return get_circle_size(size, angle)
+def get_angle_line(origin, destination):
+    x_delta = destination[0] - origin[0]
+    y_delta = destination[1] - origin[1]
+    return atan2(y_delta, x_delta) * 180 / pi
 
 class path:
     def __init__(self, o, d) -> None:
@@ -61,7 +107,6 @@ class Constructor(inkex.EffectExtension):
         pattern4 = re.compile("[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+")
         pattern5 = re.compile("[0-9]+")
         pattern6 = re.compile("C[0-9][0-9][0-9][0-9][0-9]")
-        pattern7 = re.compile("P [0-9]+")
 
         lines = []
         groups = []
@@ -154,7 +199,7 @@ class Constructor(inkex.EffectExtension):
                             y_B = float(points[4][1])
                             position = ((x_A + x_B) / 2, (y_A + y_B) /2)
                             size = math.sqrt(math.pow((x_A - x_B) / 2, 2) + math.pow((y_A - y_B) / 2, 2))
-                        elif(len(points) == 4):
+                        elif(len(points) <= 5):
                             # it is a compound.
                             type_element = 'Compound'
                             x_A = float(points[0][0])
@@ -179,22 +224,27 @@ class Constructor(inkex.EffectExtension):
 
         layer = self.svg.get_current_layer()
         for group in groups:
-            layer.add(group)
+           layer.add(group)
 
-        i = 0
         for line in lines:
             nearest_orig = ""
             nearest_dest = ""
             distance_orig = float("inf")
             distance_dest = float("inf")
 
-            i = 1 + i
-
             for group in groups:
                 if(is_metabolic_pathway_element(group)):
-                    distance_o = math.sqrt(math.pow(float(group.get('x')) - line.o[0], 2) + math.pow(float(group.get('y')) - line.o[1], 2)) - float(group.get('size'))
-                    distance_d = math.sqrt(math.pow(float(group.get('x')) - line.d[0], 2) + math.pow(float(group.get('y')) - line.d[1], 2)) - float(group.get('size'))
-                    
+                    group_center = (float(group.get('x')), float(group.get('y')))
+
+                    distance_o = math.sqrt(math.pow(group_center[0] - line.o[0], 2) + math.pow(group_center[1] - line.o[1], 2))
+                    distance_d = math.sqrt(math.pow(group_center[0] - line.d[0], 2) + math.pow(group_center[1] - line.d[1], 2))
+
+                    size_o = get_size(group.get_id(), float(group.get('size')), get_angle_line(line.o, group_center))
+                    distance_o = distance_o - math.sqrt(math.pow(size_o[0],2) + math.pow(size_o[1],2))
+
+                    size_d = get_size(group.get_id(), float(group.get('size')), get_angle_line(line.d, group_center))
+                    distance_o = distance_o - math.sqrt(math.pow(size_d[0],2) + math.pow(size_d[1],2))
+
                     if(distance_dest >= distance_d):
                         distance_dest = distance_d
                         nearest_dest = group
