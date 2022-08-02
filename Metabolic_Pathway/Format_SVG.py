@@ -185,7 +185,7 @@ class Constructor(inkex.EffectExtension):
                     figure = self.svg.getElementById(figure)
                     if(figure.tag_name == 'ellipse'):
                         position = (float(figure.get('cx')), float(figure.get('cy')))
-                        size = max(format_num(figure.get('rx')), format_num(figure.get('ry')))
+                        size = min(format_num(figure.get('rx')), format_num(figure.get('ry')))
                     elif(figure.tag_name == 'polygon'):
                         
                         points = string_to_list(figure.get('points'))
@@ -214,7 +214,7 @@ class Constructor(inkex.EffectExtension):
                 if(type_element == 'MBB'):
                     groups.append(add_metabolic_building_block(self, id_element, position[0], position[1], size))
                 elif(type_element == 'Reaction'):
-                    groups.append(add_reaction(self, id_element, reactions[0], enzime,  position[0], position[1], size))
+                    groups.append(add_reaction(self, id_element, reactions, enzime,  position[0], position[1], size))
                 elif(type_element == 'Elemental'):
                     groups.append(add_elemental_reaction(self, id_element, reactions[0], enzime, position[0], position[1], size))
                 elif(type_element == 'Inverse'):

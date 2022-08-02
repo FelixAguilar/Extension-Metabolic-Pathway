@@ -31,12 +31,12 @@ def get_transformation(element):
         return (x,y)
 def add_line(origin, destination):
     line = inkex.PathElement()
-    line.style = {'stroke': 'black', 'stroke-width': '0.25px', 'fill': 'none'}
+    line.style = {'stroke': 'black', 'stroke-width': '1px', 'fill': 'none'}
     line.path = 'M {},{} L {},{}'.format(origin[0], origin[1], destination[0], destination[1])
     return line
 def add_triangle(center, rotation):
-    style = {'stroke': 'black', 'fill': 'black', 'stroke-width': '0.25px'}
-    elem = PathElement.star(center, (1, 1), 3)
+    style = {'stroke': 'black', 'fill': 'black', 'stroke-width': '1px'}
+    elem = PathElement.star(center, (3, 3), 3)
     elem.set('sodipodi:arg1', 0)
     elem.set('sodipodi:arg2', 0)
     elem.set('transform', 'rotate(' + str(rotation) + ', ' + str(center[0]) + ', ' + str(center[1]) + ')')
@@ -52,7 +52,7 @@ def add_straight_arrow(self, origin_id, destiantion_id, origin, destination, dir
     angle = get_angle_line(origin, destination)
 
     # Triangle height (sides are 1) and splited into x and y.
-    height = 1.2
+    height = 3
     x_height = height * cos(angle * (pi / 180))
     y_height = height * sin(angle * (pi / 180))
     

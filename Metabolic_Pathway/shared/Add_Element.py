@@ -22,14 +22,14 @@ def add_text(x, y, size, text):
 
 # Adds a elipse to the given center position and radius.
 def add_elipse(cx, cy, radius, color):
-    style = {'stroke': 'black', 'fill': color, 'stroke-width': '0.25px'}
+    style = {'stroke': 'black', 'fill': color, 'stroke-width': '1px'}
     elem = PathElement.arc((cx, cy), radius)
     elem.style = style
     return elem
 
 # Adds a octogon to the given center position and side.
 def add_octogon(cx, cy, radius, color):
-    style = {'stroke': 'black', 'fill': color, 'stroke-width': '0.25px'}
+    style = {'stroke': 'black', 'fill': color, 'stroke-width': '1px'}
     elem = PathElement.star((cx, cy), (radius, radius), 8)
     elem.set('sodipodi:arg1', 0)
     elem.set('sodipodi:arg2', 0)
@@ -61,8 +61,8 @@ def add_metabolic_building_block(self, id, x, y, radius):
     # Creates a group and adds all components to it.
     group = inkex.Group()
     group.add(add_elipse(x, y, radius, 'lightgray'))
-    group.add(add_text(x - 4, y - 1, svg_font_size, 'MBB'))
-    group.add(add_text(x - len(id), y + 4, svg_font_size, id))
+    group.add(add_text(x - len('MBB') * font_size/3, y - font_size/2, svg_font_size, 'MBB'))
+    group.add(add_text(x - len(id) * font_size/3, y + font_size/2, svg_font_size, id))
 
     # Values for the group.
     group.set('id', 'M ' + str(id))
@@ -76,7 +76,7 @@ def add_metabolic_building_block(self, id, x, y, radius):
     return group
 
 # Generates a new reaction in the current layer.
-def add_reaction(self, id, reaction, enzime, x, y, radius, unique = True, g_id = None):
+def add_reaction(self, id, reactions, enzime, x, y, radius, unique = True, g_id = None):
 
     # Minimum size of component is 9.
     if(radius < 9):
@@ -88,9 +88,13 @@ def add_reaction(self, id, reaction, enzime, x, y, radius, unique = True, g_id =
     # Creates a group and adds all components to it.
     group = inkex.Group(id = id)
     group.add(add_elipse(x, y, radius, 'yellow'))
-    group.add(add_text(x - len(id), y - 3, svg_font_size, id))
-    group.add(add_text(x - len(reaction) - 2, y + 1, svg_font_size, 'R' + reaction))
-    group.add(add_text(x - len(enzime), y + 5, svg_font_size, enzime))
+
+    text_size = (2 + len(reactions)) * font_size
+
+    group.add(add_text(x - len(id) * font_size / 3, y - 3, svg_font_size, id))
+    for reaction in reactions:
+        group.add(add_text(x - len(reaction) * font_size / 3, y + 1, svg_font_size, reaction))
+    group.add(add_text(x - len(enzime) * font_size / 3, y + 5, svg_font_size, enzime))
 
     # Values for the group.
     if(unique and g_id == None):
@@ -123,7 +127,7 @@ def add_inverse_reaction(self, id, reaction, enzime, x, y, radius, unique = True
     group = inkex.Group()
     group.add(add_elipse(x, y, radius, '#c1b2ff'))
     group.add(add_text(x - len(id), y - 3, svg_font_size, id))
-    group.add(add_text(x - len(reaction) - 5, y + 1, svg_font_size, 'R' + reaction + '_rev'))
+    group.add(add_text(x - len(reaction) - 5, y + 1, svg_font_size, reaction))
     group.add(add_text(x - len(enzime), y + 5, svg_font_size, enzime))
 
     # Values for the group.
@@ -145,21 +149,19 @@ def add_inverse_reaction(self, id, reaction, enzime, x, y, radius, unique = True
 
 # Generates a new elemental reaction in the current layer.
 def add_elemental_reaction(self, id, reaction, enzime, x, y, radius):
-
-    # Minimum radius is 10.
-    if(radius < 10):
-        radius = 10
     
-    # Change font size format to svg.
-    svg_font_size = svg_format(self, font_size, 'pt')
-
     # Creates a group and adds all components to it.
     group = inkex.Group()
     group.add(add_octogon(x, y, radius, 'yellow'))
-    group.add(add_octogon(x, y, radius + 1, 'none'))
-    group.add(add_text(x - len(id), y - 3, svg_font_size, id))
-    group.add(add_text(x - len(reaction) - 2, y + 1, svg_font_size, 'R' + reaction))
-    group.add(add_text(x - len(enzime), y + 5, svg_font_size, enzime))
+    group.add(add_octogon(x, y, radius + 4, 'none'))
+
+    # Change font size format to svg.
+    svg_font_size = svg_format(self, font_size, 'pt')
+    size_y = font_size
+    size_x = font_size/3
+    group.add(add_text(x - len(id) * size_x, y - size_y, svg_font_size, id))
+    group.add(add_text(x - len(reaction) * size_x, y , svg_font_size, reaction))
+    group.add(add_text(x - len(enzime) * size_x + 4, y + size_y, svg_font_size, enzime))
 
     # Values for the group.
     group.set('id', 'E ' + str(id))
@@ -186,7 +188,7 @@ def add_component(self, component, x, y, size, id = None):
     # Creates a group with all the elements inside of it.
     group = inkex.Group()
     group.add(add_rectangle(x - (size/2), y - (size/6), size/3, size))
-    group.add(add_text(x - len(component) - 2, y + 1 , svg_font_size, 'C' + component))
+    group.add(add_text(x - len(component) - 2, y + 1 , svg_font_size, component))
 
     # Values for the group.
     if(id != None):
