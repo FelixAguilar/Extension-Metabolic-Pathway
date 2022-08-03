@@ -71,6 +71,23 @@ def get_angle_line(origin, destination):
     x_delta = destination[0] - origin[0]
     y_delta = destination[1] - origin[1]
     return atan2(y_delta, x_delta) * 180 / pi
+def get_transformation(element):
+    t = str(element.get('transform'))
+
+    if(t == "None"):
+        return (0,0)
+    else:
+        start = t.find('(')
+        middle = t.find(',')
+        end = t.find(')')
+
+        if(middle == -1):
+            x = float(t[start + 1:end]) 
+            y = float(0)
+        else:
+            x = float(t[start + 1:middle]) 
+            y = float(t[middle + 2:end])
+        return (x,y)
 
 class path:
     def __init__(self, o, d) -> None:
@@ -92,6 +109,10 @@ class path:
             path.o = path.d
             path.d = aux
 
+    def apply_transformation(path, transformation):
+        path.o = (path.o[0] + transformation[0], path.o[1] + transformation[1])
+        path.d = (path.d[0] + transformation[0], path.d[1] + transformation[1])
+
     def __str__(self) -> str:
         return str(self.o) + " " + str(self.d)
 
@@ -107,9 +128,11 @@ class Constructor(inkex.EffectExtension):
         pattern4 = re.compile("[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+")
         pattern5 = re.compile("[0-9]+")
         pattern6 = re.compile("C[0-9][0-9][0-9][0-9][0-9]")
+        pattern7 = re.compile("E *")
 
         lines = []
         groups = []
+        transform = []
 
         ids = []
         for id in self.svg.get_ids():
@@ -120,6 +143,10 @@ class Constructor(inkex.EffectExtension):
             texts = []
             figures = []
 
+            if(pattern1.match(id)):
+                element = self.svg.getElementById(id)
+                transform = get_transformation(element)
+            
             # get element by ID and if is a group and it isn't a graph then get all child elements.
             element = self.svg.getElementById(id)
             if(not pattern1.match(element.get_id()) and element.tag_name == 'g'):
@@ -224,13 +251,30 @@ class Constructor(inkex.EffectExtension):
 
         layer = self.svg.get_current_layer()
         for group in groups:
-           layer.add(group)
+            for child in group.descendants():
+
+                if(child.tag_name == 'path'):
+
+                    child.set('sodipodi:cx', float(child.get('sodipodi:cx')) + transform[0])
+                    child.set('sodipodi:cy', float(child.get('sodipodi:cy')) + transform[1])
+
+                    if(pattern7.match(group.get_id())):
+                        child.set('transform', 'rotate(23, ' + str(child.get('sodipodi:cx')) + ', ' + str(child.get('sodipodi:cy')) + ')')
+                    
+                else:
+                    child.set('x', float(child.get('x')) + transform[0])
+                    child.set('y', float(child.get('y')) + transform[1])
+            layer.add(group)
 
         for line in lines:
             nearest_orig = ""
             nearest_dest = ""
             distance_orig = float("inf")
             distance_dest = float("inf")
+
+            line.apply_transformation(transform)
+            angle = get_angle_line(line.d, line.o)
+            inkex.errormsg(str(angle))
 
             for group in groups:
                 if(is_metabolic_pathway_element(group)):
@@ -239,11 +283,10 @@ class Constructor(inkex.EffectExtension):
                     distance_o = math.sqrt(math.pow(group_center[0] - line.o[0], 2) + math.pow(group_center[1] - line.o[1], 2))
                     distance_d = math.sqrt(math.pow(group_center[0] - line.d[0], 2) + math.pow(group_center[1] - line.d[1], 2))
 
-                    size_o = get_size(group.get_id(), float(group.get('size')), get_angle_line(line.o, group_center))
+                    size_o = get_size(group.get_id(), float(group.get('size')), angle)
                     distance_o = distance_o - math.sqrt(math.pow(size_o[0],2) + math.pow(size_o[1],2))
-
-                    size_d = get_size(group.get_id(), float(group.get('size')), get_angle_line(line.d, group_center))
-                    distance_o = distance_o - math.sqrt(math.pow(size_d[0],2) + math.pow(size_d[1],2))
+                    size_d = get_size(group.get_id(), float(group.get('size')), angle)
+                    distance_d = distance_d - math.sqrt(math.pow(size_d[0],2) + math.pow(size_d[1],2))
 
                     if(distance_dest >= distance_d):
                         distance_dest = distance_d

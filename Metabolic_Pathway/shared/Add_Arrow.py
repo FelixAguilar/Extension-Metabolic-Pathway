@@ -87,7 +87,7 @@ def get_rectangle_size(size, angle):
         return (center_base, abs(center_hight * sin(angle * (pi / 180))))
 def get_octogon_size(size, angle):
     
-    size += 1
+    size += 4
     angle = abs(angle)
     hight = size * cos(22.5 * (pi / 180))
 
