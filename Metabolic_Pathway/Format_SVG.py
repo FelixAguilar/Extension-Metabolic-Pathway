@@ -274,7 +274,6 @@ class Constructor(inkex.EffectExtension):
 
             line.apply_transformation(transform)
             angle = get_angle_line(line.d, line.o)
-            inkex.errormsg(str(angle))
 
             for group in groups:
                 if(is_metabolic_pathway_element(group)):
