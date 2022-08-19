@@ -39,7 +39,7 @@ def add_octogon(cx, cy, radius, color):
 
 # Adds a rectangle to the given center position, high and base.
 def add_rectangle(cx, cy, base, hight):
-    style = {'stroke': 'black', 'fill': 'none', 'stroke-width': '0.25px'}
+    style = {'stroke': 'black', 'fill': 'none', 'stroke-width': '1px'}
     elem = Rectangle()
     elem.set('x', cx)
     elem.set('y', cy)
@@ -192,8 +192,8 @@ def add_component(self, component, x, y, size, id = None):
 
     # Creates a group with all the elements inside of it.
     group = inkex.Group()
-    group.add(add_rectangle(x - (size/2), y - (size/6), size/3, size))
-    group.add(add_text(x - len(component) - 2, y + 1 , svg_font_size, component))
+    group.add(add_rectangle(x - size/2, y - ((font_size + 2)/2), (font_size + 2), size))
+    group.add(add_text(x - ((len(component)*(font_size/2))/2), y + (font_size/2) - 1 , svg_font_size, component))
 
     # Values for the group.
     if(id != None):
@@ -201,6 +201,9 @@ def add_component(self, component, x, y, size, id = None):
     group.set('x', x)
     group.set('y', y)
     group.set('size', size)
+
+    """ (font_size/1.5) * len(component) + 2"""
+    """(font_size/1.5) * len(component) + 2"""
 
     # Gets the current layer and adds the group to it.
     layer = self.svg.get_current_layer()
