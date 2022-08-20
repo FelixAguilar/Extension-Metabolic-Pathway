@@ -78,7 +78,7 @@ def add_metabolic_building_block(self, id, x, y, radius):
     return group
 
 # Generates a new reaction in the current layer.
-def add_reaction(self, id, reactions, enzime, x, y, radius, unique = True, g_id = None):
+def add_reaction(self, id, reactions, enzime, x, y, radius, unique = False, g_id = None):
 
     # Creates a group and adds all components to it.
     group = inkex.Group(id = id)
@@ -117,7 +117,7 @@ def add_reaction(self, id, reactions, enzime, x, y, radius, unique = True, g_id 
 
 
 # Generates a new inverse reaction in the current layer.
-def add_inverse_reaction(self, id, reaction, enzime, x, y, radius, unique = True, g_id = None):
+def add_inverse_reaction(self, id, reaction, enzime, x, y, radius, unique = False, g_id = None):
 
     # Minimum size of component is 11.
     if(radius < 11):
