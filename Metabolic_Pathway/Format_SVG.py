@@ -138,6 +138,8 @@ class Constructor(inkex.EffectExtension):
         pattern5 = re.compile("^([0-9]+)$")
         pattern6 = re.compile("C[0-9][0-9][0-9][0-9][0-9]")
         pattern7 = re.compile("E *")
+        pattern8 = re.compile("^([0-9]+)_r$")
+        pattern9 = re.compile("^([0-9]+)\-([0-9]+)_r$")
 
         # Lists for the elements in the graph.
         lines = []
@@ -254,8 +256,14 @@ class Constructor(inkex.EffectExtension):
                             reactions.append(text)
                         elif(pattern4.match(text)):
                             enzime = text
-                        elif(pattern5.match(text)):
-                            id_element = text
+                        elif(pattern5.match(text) or pattern8.match(text) or pattern9.match(text)):
+
+                            if(pattern9.match(text)):
+                                id_element = text[:text.find('-')]
+                            elif(pattern8.match(text)):
+                                id_element = text[:-2]
+                            else:
+                                id_element = text
                         elif(pattern6.match(text)):
                             type_element = 'Compound'
                             name = text
