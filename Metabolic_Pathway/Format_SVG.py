@@ -1,20 +1,22 @@
+from cmath import sqrt
+from xmlrpc.client import boolean
 import inkex, re, math
-from math import atan, atan2, sin, cos, pi
+from math import atan, atan2, sin, cos, pi, sqrt, pow
 from shared.Add_Element import add_metabolic_building_block, add_elemental_reaction, add_reaction, add_inverse_reaction, add_component, font_size
 from shared.Add_Arrow import add_arrow
 
-def format_num(string):
+def format_num(string) -> float:
     separator = string.find(',')
     if(separator != -1):
         string = string[:separator-1] + '.' + string[separator+1:]
         return float(string)
     return float(string)
-def is_metabolic_pathway_element(svg_element):
+def is_metabolic_pathway_element(svg_element) -> bool:
     pattern = re.compile("[E|I|M|C|R] [0-9]+")
     if(pattern.match(svg_element.get_id())):
         return True
     return False
-def string_to_list(string):
+def string_to_list(string) -> list:
     s_list = string.split(' ')
     f_list = []
     for s in s_list:
@@ -23,30 +25,36 @@ def string_to_list(string):
         y = float(s[1])
         f_list.append((x, y))
     return f_list
-def is_component(ID):
+def is_component(ID) -> bool:
     pattern = re.compile("C [0-9]+")
     if(pattern.match(ID)):
         return True
     return False
-def is_elemental_reaction(string):
+def is_elemental_reaction(string) -> bool:
     pattern = re.compile("E [0-9]+")
     if(pattern.match(string)):
         return True
     return False
-def get_circle_size(size, angle):
-    return (abs(size * cos(angle * (pi / 180))), abs(size * sin(angle * (pi / 180))))
-def get_rectangle_size(size, angle):
+def get_elipse_size(size_x, size_y, angle):
+    angle = angle * (pi / 180)
+    radius = (size_x * size_y) / (sqrt((pow(size_x, 2) * pow(sin(angle), 2)) + (pow(size_y, 2) * pow(cos(angle), 2))))
+    return (abs(radius * cos(angle)), abs(radius * sin(angle)))
 
-    center_base = size / 2
-    center_hight = (font_size + 2) / 2
+def get_rectangle_size(size_x, size_y, angle):
+
+    center_base = size_x / 2
+    center_hight = size_y / 2
 
     vertex_angle = atan(center_hight / center_base) * 180 / pi
 
     if((angle > vertex_angle and angle < 180 - vertex_angle) or (angle < -vertex_angle and angle > vertex_angle - 180)):
+        inkex.errormsg((abs(center_base * cos(angle * (pi / 180))), center_hight))
         return (abs(center_base * cos(angle * (pi / 180))), center_hight)
     else:
+        inkex.errormsg((center_base, abs(center_hight * sin(angle * (pi / 180)))))
         return (center_base, abs(center_hight * sin(angle * (pi / 180))))
-def get_octogon_size(size, angle):
+
+def get_octogon_size(size, size_y, angle):
 
     size += 1
     angle = abs(angle)
@@ -58,13 +66,15 @@ def get_octogon_size(size, angle):
         return (abs(hight * cos(angle * (pi / 180))), hight)
     else:
         return (abs(hight * cos(angle * (pi / 180))), abs(hight * sin(angle * (pi / 180))))
-def get_size(ID, size, angle):
+
+def get_size(ID, size_x, size_y, angle):
     if(is_component(ID)):
-        return get_rectangle_size(size, angle)
+        return get_rectangle_size(size_x, size_y, angle)
     if(is_elemental_reaction(ID)):
-        return get_octogon_size(size, angle)
+        return get_octogon_size(size_x, size_y, angle)
     else:
-        return get_circle_size(size, angle)
+        return get_elipse_size(size_x, size_y, angle)
+
 def get_angle_line(origin, destination):
     x_delta = destination[0] - origin[0]
     y_delta = destination[1] - origin[1]
@@ -90,19 +100,16 @@ def get_distance(point_1, point_2):
     return math.sqrt(math.pow(point_1[0] - point_2[0], 2) + math.pow(point_1[1] - point_2[1], 2))
 
 # Class for the paths.
-class path:
-    def __init__(self, o, d, h, p) -> None:
+class Path:
+    def __init__(self, o, d, p) -> None:
         self.o = o  # Tupple origin.
         self.d = d  # Tupple destiny.
-        self.h = h  # hight of the arrow.
         self.p = p  # Tupple point of the arrow.
 
     def get_o(path):
         return path.o
     def get_d(path):
         return path.d
-    def get_h(path):
-        return path.h
     def get_p(path):
         return path.p
 
@@ -110,10 +117,11 @@ class path:
     def change_direction(path):
         distance_oh = get_distance(path.p, path.o)
         distance_dh = get_distance(path.p, path.d)
-        if(distance_oh < distance_dh):
-            aux = path.o
-            path.o = path.d
-            path.d = aux
+        if(distance_oh > distance_dh):
+            path.d = path.o
+            path.o = path.p
+        else:
+            path.o = path.p
 
     # Applies the transformation on the origin, destiny and point of the path.
     def apply_transformation(path, transformation):
@@ -122,7 +130,22 @@ class path:
         path.p = (path.p[0] + transformation[0], path.p[1] + transformation[1])
 
     def __str__(self) -> str:
-        return str(self.o) + " " + str(self.d) + " " + str(self.h) + " " + str(self.p)
+        return str(self.o) + " " + str(self.d) + " " + str(self.p)
+
+class Group_info:
+    def __init__(self, group, size_x, size_y) -> None:
+        self.size_x = size_x
+        self.size_y = size_y
+        self.group = group
+
+    def get_size_x(group_info):
+        return group_info.size_x
+
+    def get_size_y(group_info):
+        return group_info.size_y
+
+    def get_group(group_info):
+        return group_info.group
 
 class Constructor(inkex.EffectExtension):
 
@@ -143,7 +166,7 @@ class Constructor(inkex.EffectExtension):
 
         # Lists for the elements in the graph.
         lines = []
-        groups = []
+        groups_info = []
         transform = []
 
         # Gets a editable list of all ids.
@@ -177,7 +200,6 @@ class Constructor(inkex.EffectExtension):
 
                     # Variables used to define a path.
                     points = "" # String of data extracted.
-                    height = 0  # Hight of the arrow head.
                     point = 0   # Farthedst point in the arrow.
                     origin = 0  # Origin of the path.
                     destiny = 0 # Destiny of the path.
@@ -216,19 +238,13 @@ class Constructor(inkex.EffectExtension):
                             # Gets the greatest hight and the vertex of it.
                             if(distance_AB > distance_BC and distance_AC > distance_BC):
                                 point = point_A
-                                distance_BC = distance_BC / 2
-                                height = math.sqrt(math.pow(distance_AC, 2) - math.pow(distance_BC, 2))
                             if(distance_BC > distance_AC and distance_AB > distance_AC):
                                 point = point_B
-                                distance_AC = distance_AC / 2
-                                height = math.sqrt(math.pow(distance_BC, 2) - math.pow(distance_AC, 2))
                             else:
                                 point = point_C
-                                distance_AB = distance_AB / 2
-                                height = math.sqrt(math.pow(distance_AC, 2) - math.pow(distance_AB, 2))
 
                     # Adds the path to the list.
-                    lines.append(path(origin, destiny, height, point))
+                    lines.append(Path(origin, destiny, point))
 
                 # line tranformation before change direction.
 
@@ -242,6 +258,8 @@ class Constructor(inkex.EffectExtension):
                     enzime = ""       # Code of the enzime.
                     position = []     # Center of the element.
                     size = 0          # Size of the element.
+                    size_x = 0        # Size of the element in the x axis.
+                    size_y = 0        # Size of the element in the y axis.
                     name = ""         # Used for compounds if it is not using codes.
 
                     # Filters the text setting the type of element with it if it can. Also saves the text in the correct variable.
@@ -257,9 +275,9 @@ class Constructor(inkex.EffectExtension):
                         elif(pattern4.match(text)):
                             enzime = text
                         elif(pattern5.match(text) or pattern8.match(text) or pattern9.match(text)):
-
                             if(pattern9.match(text)):
-                                id_element = text[:text.find('-')]
+                                id_element = text
+                                #text[:text.find('-')]
                             elif(pattern8.match(text)):
                                 id_element = text[:-2]
                             else:
@@ -278,7 +296,9 @@ class Constructor(inkex.EffectExtension):
                         # If it is an ellipse gets the center of it and the smallest size.
                         if(figure.tag_name == 'ellipse'):
                             position = (float(figure.get('cx')), float(figure.get('cy')))
-                            size = min(format_num(figure.get('rx')), format_num(figure.get('ry')))
+                            size_x = format_num(figure.get('rx'))
+                            size_y = format_num(figure.get('ry'))
+                            size = min(size_x, size_y)
 
                         # If it is a poligon then gets the points.
                         elif(figure.tag_name == 'polygon'):
@@ -288,15 +308,23 @@ class Constructor(inkex.EffectExtension):
                             if(figure.get('fill') == 'yellow'):
                                 type_element = 'Elemental'
 
-                                # Gets the first and the fourth point of the octagon.
+                                # Gets the first to the fourth point of the octagon.
                                 x_A = float(points[0][0])
                                 y_A = float(points[0][1])
-                                x_B = float(points[4][0])
-                                y_B = float(points[4][1])
+                                x_B = float(points[1][0])
+                                y_B = float(points[1][1])
+                                x_C = float(points[2][0])
+                                y_C = float(points[2][1])
+                                x_D = float(points[3][0])
+                                y_D = float(points[3][1])
+                                x_E = float(points[4][0])
+                                y_E = float(points[4][1])
 
                                 # With this points calculates the center and size of the element.
-                                position = ((x_A + x_B) / 2, (y_A + y_B) / 2)
-                                size = math.sqrt(math.pow((x_A - x_B) / 2, 2) + math.pow((y_A - y_B) / 2, 2))
+                                position = ((x_A + x_E) / 2, (y_A + y_E) / 2)
+                                size_x = math.sqrt(math.pow(((x_D + x_C) / 2) - x_B, 2))
+                                size_y = math.sqrt(math.pow(((y_A + y_B) / 2) - y_C, 2))
+                                size = min(size_x, size_y)
 
                             # If it has less or equal points than 5 it is a compound.
                             elif(len(points) <= 5):
@@ -308,28 +336,32 @@ class Constructor(inkex.EffectExtension):
                                 x_B = float(points[2][0])
                                 y_B = float(points[2][1])
                                 x_C = float(points[1][0])
+                                y_C = float(points[1][1])
 
                                 # gets the center of the compound and x size.
                                 position = ((x_A + x_B) / 2, (y_A + y_B) / 2)
-                                size = abs(x_A - x_C)
-
+                                size_x = abs(x_A - x_C)
+                                size_y = abs(y_A - y_B)
+                                size = size_x
+                                
                     # Proceeds to set the element with the information obtained inside the list.
                     if(type_element == 'MBB'):
-                        groups.append(add_metabolic_building_block(self, id_element, position[0], position[1], size))
+                        groups_info.append(Group_info(add_metabolic_building_block(self, id_element, position[0], position[1], size), size_x, size_y))
                     elif(type_element == 'Reaction'):
-                        groups.append(add_reaction(self, id_element, reactions, enzime,  position[0], position[1], size))
+                        groups_info.append(Group_info(add_reaction(self, id_element, reactions, enzime,  position[0], position[1], size), size_x, size_y))
                     elif(type_element == 'Elemental'):
-                        groups.append(add_elemental_reaction(self, id_element, reactions[0], enzime, position[0], position[1], size))
+                        groups_info.append(Group_info(add_elemental_reaction(self, id_element, reactions[0], enzime, position[0], position[1], size), size_x, size_y))
                     elif(type_element == 'Inverse'):
-                        groups.append(add_inverse_reaction(self, id_element, reactions[0], enzime, position[0], position[1], size))
+                        groups_info.append(Group_info(add_inverse_reaction(self, id_element, reactions[0], enzime, position[0], position[1], size), size_x, size_y))
                     elif(type_element == 'Compound'):
-                        groups.append(add_component(self, name, position[0], position[1], size))
+                        groups_info.append(Group_info(add_component(self, name, position[0], position[1], size), size_x, size_y))
 
         # For each group created, applies the transformation of the graph so it will me draw in the correct spot.
         layer = self.svg.get_current_layer()
-        for group in groups:
+        for group_info in groups_info:
 
-            # Iterates trough the childs in the group and changes the center coordinates wit the transformation.
+            group = group_info.get_group()
+            # Iterates trough the childs in the group and changes the center coordinates with the transformation.
             for child in group.descendants():
 
                 if(child.tag_name == 'path'):
@@ -357,10 +389,6 @@ class Constructor(inkex.EffectExtension):
             nearest_dest = "" # ID of the nearest element to destiny.
             distance_orig = float("inf") # Distance to the nearest element to origin.
             distance_dest = float("inf") # Distance to the nearest element to destiny.
-            nearest_orig_old = "" # The last nearest element to origin.
-            nearest_dest_old = "" # The last nearest element to destiny.
-            distance_orig_old = float("inf") # Distance of the last nearest element to origin.
-            distance_dest_old = float("inf") # Distance of the last nearest element to destiny.
 
             # Applies the transformation, changes the direction of the arrow and gets the angle of the line to the x-axis.
             line.apply_transformation(transform)
@@ -368,51 +396,41 @@ class Constructor(inkex.EffectExtension):
             angle = get_angle_line(line.d, line.o)
 
             # Iterates trought all elements in groups for which the path interconects them.
-            for group in groups:
+            for group_info in groups_info:
 
+                group = group_info.get_group()
+                size_x = group_info.get_size_x()
+                size_y = group_info.get_size_y()
+                
                 # It must be an metabolic_path_way.
                 if(is_metabolic_pathway_element(group)):
 
                     # Gets the center of the group.
-                    group_center = (float(group.get('x')),
-                                    float(group.get('y')))
+                    group_center = (float(group.get('x')), float(group.get('y')))
 
                     # Gets the distance to the origin and destiny of this group.
-                    distance_o = math.sqrt(math.pow(group_center[0] - line.o[0], 2) + math.pow(group_center[1] - line.o[1], 2)) + line.h
+                    distance_o = math.sqrt(math.pow(group_center[0] - line.o[0], 2) + math.pow(group_center[1] - line.o[1], 2))
                     distance_d = math.sqrt(math.pow(group_center[0] - line.d[0], 2) + math.pow(group_center[1] - line.d[1], 2))
 
                     # Gets the size of the element and the corrected distance to the line.
-                    size_o = get_size(group.get_id(), float(group.get('size')), angle)
+                    size_o = get_size(group.get_id(), size_x, size_y, angle)
                     distance_o = distance_o - math.sqrt(math.pow(size_o[0], 2) + math.pow(size_o[1], 2))
-                    size_d = get_size(group.get_id(), float(group.get('size')), angle)
+                    size_d = get_size(group.get_id(), size_x, size_y, angle)
                     distance_d = distance_d - math.sqrt(math.pow(size_d[0], 2) + math.pow(size_d[1], 2))
 
                     # Checks if the distance to the destiny is smaller, if it is then updates it.
                     if(distance_dest >= distance_d):
-                        nearest_dest_old = nearest_dest
-                        distance_dest_old = distance_dest
                         distance_dest = distance_d
                         nearest_dest = group
 
                     # Checks if the distance to the origin is smaller, if it is then updates it.
                     if(distance_orig >= distance_o):
-                        nearest_orig_old = nearest_orig
-                        distance_orig_old = distance_orig
                         distance_orig = distance_o
                         nearest_orig = group
-
-                    # If the result is the same for both elements, then backrolls the bigest gap between them.
-                    if(nearest_dest == nearest_orig):
-                        if(distance_dest < distance_orig):
-                            nearest_orig = nearest_orig_old
-                            distance_orig = distance_orig_old
-                        else:
-                            nearest_dest = nearest_dest_old
-                            distance_dest = distance_dest_old
             
             # If neither of them is empty then draw the arrow.
             if(nearest_dest != "" and nearest_orig != ""):
-                add_arrow(self, nearest_orig, nearest_dest, False)
+                add_arrow(self, nearest_dest, nearest_orig, False)
 
         # Deletes old graph.
         self.svg.getElementById('graph0').delete()
