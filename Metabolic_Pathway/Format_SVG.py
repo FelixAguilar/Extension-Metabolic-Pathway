@@ -1,5 +1,4 @@
 from cmath import sqrt
-from xmlrpc.client import boolean
 import inkex, re, math
 from math import atan, atan2, sin, cos, pi, sqrt, pow
 from shared.Add_Element import add_metabolic_building_block, add_elemental_reaction, add_reaction, add_inverse_reaction, add_component, font_size
@@ -39,7 +38,6 @@ def get_elipse_size(size_x, size_y, angle):
     angle = angle * (pi / 180)
     radius = (size_x * size_y) / (sqrt((pow(size_x, 2) * pow(sin(angle), 2)) + (pow(size_y, 2) * pow(cos(angle), 2))))
     return (abs(radius * cos(angle)), abs(radius * sin(angle)))
-
 def get_rectangle_size(size_x, size_y, angle):
 
     center_base = size_x / 2
@@ -53,20 +51,16 @@ def get_rectangle_size(size_x, size_y, angle):
     else:
         inkex.errormsg((center_base, abs(center_hight * sin(angle * (pi / 180)))))
         return (center_base, abs(center_hight * sin(angle * (pi / 180))))
+def get_octogon_size(size_x, size_y, angle):
 
-def get_octogon_size(size, size_y, angle):
-
-    size += 1
     angle = abs(angle)
-    hight = size * cos(22.5 * (pi / 180))
 
     if (angle < 22.5 or angle > 157.5):
-        return (hight, abs(hight * sin(angle * (pi / 180))))
+        return (size_x, abs(size_y * sin(angle * (pi / 180))))
     elif (angle > 67.5 and angle < 112.5):
-        return (abs(hight * cos(angle * (pi / 180))), hight)
+        return (abs(size_x * cos(angle * (pi / 180))), size_y)
     else:
-        return (abs(hight * cos(angle * (pi / 180))), abs(hight * sin(angle * (pi / 180))))
-
+        return (abs(size_x * cos(angle * (pi / 180))), abs(size_y * sin(angle * (pi / 180))))
 def get_size(ID, size_x, size_y, angle):
     if(is_component(ID)):
         return get_rectangle_size(size_x, size_y, angle)
@@ -74,7 +68,6 @@ def get_size(ID, size_x, size_y, angle):
         return get_octogon_size(size_x, size_y, angle)
     else:
         return get_elipse_size(size_x, size_y, angle)
-
 def get_angle_line(origin, destination):
     x_delta = destination[0] - origin[0]
     y_delta = destination[1] - origin[1]
