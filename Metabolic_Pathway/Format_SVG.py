@@ -1,144 +1,87 @@
-from cmath import sqrt
-import inkex, re, math
-from math import atan, atan2, sin, cos, pi, sqrt, pow
-from shared.Add_Element import add_metabolic_building_block, add_elemental_reaction, add_reaction, add_inverse_reaction, add_component, font_size
+import inkex, re
+from typing import Any
+from math import sqrt, pow
 from shared.Add_Arrow import add_arrow
+from shared.Boleans import is_component, is_elemental_reaction, is_metabolic_pathway_element
+from shared.Geometry import get_rectangle_size, get_octogon_size, get_elipse_size, get_angle_line, get_transformation, get_distance
+from shared.Add_Element import add_metabolic_building_block, add_elemental_reaction, add_reaction, add_inverse_reaction, add_component
 
-def format_num(string) -> float:
-    separator = string.find(',')
+# Obtains from the string the number in float format.
+def format_num(number: str) -> float:
+    separator = number.find(',')
     if(separator != -1):
-        string = string[:separator-1] + '.' + string[separator+1:]
-        return float(string)
-    return float(string)
-def is_metabolic_pathway_element(svg_element) -> bool:
-    pattern = re.compile("[E|I|M|C|R] [0-9]+")
-    if(pattern.match(svg_element.get_id())):
-        return True
-    return False
-def string_to_list(string) -> list:
-    s_list = string.split(' ')
-    f_list = []
-    for s in s_list:
-        s = s.split(",")
-        x = float(s[0])
-        y = float(s[1])
-        f_list.append((x, y))
-    return f_list
-def is_component(ID) -> bool:
-    pattern = re.compile("C [0-9]+")
-    if(pattern.match(ID)):
-        return True
-    return False
-def is_elemental_reaction(string) -> bool:
-    pattern = re.compile("E [0-9]+")
-    if(pattern.match(string)):
-        return True
-    return False
-def get_elipse_size(size_x, size_y, angle):
-    angle = angle * (pi / 180)
-    radius = (size_x * size_y) / (sqrt((pow(size_x, 2) * pow(sin(angle), 2)) + (pow(size_y, 2) * pow(cos(angle), 2))))
-    return (abs(radius * cos(angle)), abs(radius * sin(angle)))
-def get_rectangle_size(size_x, size_y, angle):
+        number = number[:separator-1] + '.' + number[separator+1:]
+    return float(number)
 
-    center_base = size_x / 2
-    center_hight = size_y / 2
+# From a list in string format obtains all the points inside a list in float form.
+def string_to_list(list: str) -> list[tuple[float, float]]:
+    points_list = list.split(' ')
+    coordenates_list = []
+    for point in points_list:
+        point = point.split(",")
+        x = float(point[0])
+        y = float(point[1])
+        coordenates_list.append((x, y))
+    return coordenates_list
 
-    vertex_angle = atan(center_hight / center_base) * 180 / pi
-
-    if((angle > vertex_angle and angle < 180 - vertex_angle) or (angle < -vertex_angle and angle > vertex_angle - 180)):
-        inkex.errormsg((abs(center_base * cos(angle * (pi / 180))), center_hight))
-        return (abs(center_base * cos(angle * (pi / 180))), center_hight)
-    else:
-        inkex.errormsg((center_base, abs(center_hight * sin(angle * (pi / 180)))))
-        return (center_base, abs(center_hight * sin(angle * (pi / 180))))
-def get_octogon_size(size_x, size_y, angle):
-
-    angle = abs(angle)
-
-    if (angle < 22.5 or angle > 157.5):
-        return (size_x, abs(size_y * sin(angle * (pi / 180))))
-    elif (angle > 67.5 and angle < 112.5):
-        return (abs(size_x * cos(angle * (pi / 180))), size_y)
-    else:
-        return (abs(size_x * cos(angle * (pi / 180))), abs(size_y * sin(angle * (pi / 180))))
-def get_size(ID, size_x, size_y, angle):
+# Function that using the id decides which function to use to obtain the size in x and y axis.
+def get_size(ID: str, size_x: float, size_y: float, angle: float) -> tuple[float, float]:
     if(is_component(ID)):
         return get_rectangle_size(size_x, size_y, angle)
     if(is_elemental_reaction(ID)):
         return get_octogon_size(size_x, size_y, angle)
     else:
         return get_elipse_size(size_x, size_y, angle)
-def get_angle_line(origin, destination):
-    x_delta = destination[0] - origin[0]
-    y_delta = destination[1] - origin[1]
-    return atan2(y_delta, x_delta) * 180 / pi
-def get_transformation(element):
-    t = str(element.get('transform'))
 
-    if(t == "None"):
-        return (0, 0)
-    else:
-        start = t.find('(')
-        middle = t.find(',')
-        end = t.find(')')
-
-        if(middle == -1):
-            x = float(t[start + 1:end])
-            y = float(0)
-        else:
-            x = float(t[start + 1:middle])
-            y = float(t[middle + 2:end])
-        return (x, y)
-def get_distance(point_1, point_2):
-    return math.sqrt(math.pow(point_1[0] - point_2[0], 2) + math.pow(point_1[1] - point_2[1], 2))
-
-# Class for the paths.
+# Class used to define each path.
 class Path:
-    def __init__(self, o, d, p) -> None:
-        self.o = o  # Tupple origin.
-        self.d = d  # Tupple destiny.
-        self.p = p  # Tupple point of the arrow.
 
-    def get_o(path):
-        return path.o
-    def get_d(path):
-        return path.d
-    def get_p(path):
-        return path.p
+    # Constructor.
+    def __init__(self, o: tuple[float, float], d: tuple[float, float], p: tuple[float, float]) -> None:
+        self.o: tuple[float, float] = o  # Tuple origin. [x,y]
+        self.d: tuple[float, float] = d  # Tuple destiny. [x,y]
+        self.p: tuple[float, float] = p  # Tuple arrow head. [x,y]
 
-    # Changes the direction of the arrow depending on the point of the arrow.
-    def change_direction(path):
-        distance_oh = get_distance(path.p, path.o)
-        distance_dh = get_distance(path.p, path.d)
+    # Gets for the atributes.
+    def get_o(self) -> tuple[float, float]:
+        return self.o
+    def get_d(self) -> tuple[float, float]:
+        return self.d
+    def get_p(self) -> tuple[float, float]:
+        return self.p
+
+    # Changes the direction of the arrow depending on the point of the arrow and changes de origin of the line for the head of the arrow.
+    def change_direction(self) -> None:
+        distance_oh = get_distance(self.p, self.o)
+        distance_dh = get_distance(self.p, self.d)
         if(distance_oh > distance_dh):
-            path.d = path.o
-            path.o = path.p
+            self.d = self.o
+            self.o = self.p
         else:
-            path.o = path.p
+            self.o = self.p
 
-    # Applies the transformation on the origin, destiny and point of the path.
-    def apply_transformation(path, transformation):
-        path.o = (path.o[0] + transformation[0], path.o[1] + transformation[1])
-        path.d = (path.d[0] + transformation[0], path.d[1] + transformation[1])
-        path.p = (path.p[0] + transformation[0], path.p[1] + transformation[1])
+    # Applies the transformation on the origin, destiny and head of the path.
+    def apply_transformation(self, transformation) -> None:
+        self.o = (self.o[0] + transformation[0], self.o[1] + transformation[1])
+        self.d = (self.d[0] + transformation[0], self.d[1] + transformation[1])
+        self.p = (self.p[0] + transformation[0], self.p[1] + transformation[1])
 
-    def __str__(self) -> str:
-        return str(self.o) + " " + str(self.d) + " " + str(self.p)
-
+# Class used to define a element group and his original size. 
 class Group_info:
-    def __init__(self, group, size_x, size_y) -> None:
-        self.size_x = size_x
-        self.size_y = size_y
-        self.group = group
 
-    def get_size_x(group_info):
-        return group_info.size_x
+    # Constructor.
+    def __init__(self, group, size_x: float, size_y: float) -> None:
+        self.size_x: float = size_x # Size in the x-axis of the original element.
+        self.size_y: float = size_y # Size in the y-axis of the original element.
+        self.group = group          # Group to be drawn on the canvas.
 
-    def get_size_y(group_info):
-        return group_info.size_y
-
-    def get_group(group_info):
-        return group_info.group
+    # Gets for the atributes.
+    def get_size_x(self) -> float:
+        return self.size_x
+    def get_size_y(self) -> float:
+        return self.size_y
+    def get_group(self) -> Any:
+        return self.group
 
 class Constructor(inkex.EffectExtension):
 
@@ -146,56 +89,53 @@ class Constructor(inkex.EffectExtension):
 
     def effect(self):
 
-        # Patterns for the text and elements.
-        pattern1 = re.compile("graph*")
-        pattern2 = re.compile("R[0-9][0-9][0-9][0-9][0-9]_rev")
-        pattern3 = re.compile("R[0-9][0-9][0-9][0-9][0-9]")
-        pattern4 = re.compile("[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+")
-        pattern5 = re.compile("^([0-9]+)$")
-        pattern6 = re.compile("C[0-9][0-9][0-9][0-9][0-9]")
-        pattern7 = re.compile("E *")
-        pattern8 = re.compile("^([0-9]+)_r$")
-        pattern9 = re.compile("^([0-9]+)\-([0-9]+)_r$")
+        # Patterns for the text inside the graph. TODO
+        pattern1 = re.compile("graph*")                                     # Graph identification pattern.
+        pattern2 = re.compile("R[0-9][0-9][0-9][0-9][0-9]_rev")             # Reverse reaction code pattern.
+        pattern3 = re.compile("R[0-9][0-9][0-9][0-9][0-9]")                 # Reaction code pattern.
+        pattern4 = re.compile("[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+") # Enzime code pattern.
+        pattern5 = re.compile("^([0-9]+(\-[0-9]+)?(_r)?)$")                 # ID code pattern.
+        pattern7 = re.compile("E *")                                        # Elemental reaction graph ID pattern.
 
-        # Lists for the elements in the graph.
-        lines = []
-        groups_info = []
-        transform = []
+        lines: list[Path] = []              # List that will contain all the paths of the graph.
+        groups_info: list[Group_info] = []  # List that will contain all the groups of the graph.
+        transform: tuple[float, float] = [] # Tuple that will indicate which transformation must be applied to the elements of the graph.
 
-        # Gets a editable list of all ids.
-        ids = []
+        # Get list of all the ids of the graph in the current state.
+        ids: list[str] = []
         for id in self.svg.get_ids():
             ids.append(id)
 
+        # Each element of the graph is filtered to generate the new format.
         for id in ids:
 
-            # if the id is from  a graph gets the transformation.
+            # If the id indicates the graph itself, the transformation is extracted.
             if(pattern1.match(id)):
                 element = self.svg.getElementById(id)
                 transform = get_transformation(element)
             else:
+                texts: list[str] = []   # List that contains all text inside a element.
+                figures: list[str] = [] # List that contains all figures ids inside a element.
 
-                # Lists used for each id element separated in text and figures.
-                texts = []
-                figures = []
-
-                # get element by ID and if it is a group gets all his child elements divided in text and figures.
+                # Get the element using the id and check that it is a group using the tag.
                 element = self.svg.getElementById(id)
                 if(element.tag_name == 'g'):
+
+                    # IIterates over its children and separates figures and texts using the tag.
                     for child in element.descendants():
                         if(child.tag_name == 'text'):
                             texts.append(child.text)
                         if(child.tag_name == 'ellipse' or child.tag_name == 'polygon' or child.tag_name == 'path'):
                             figures.append(child.get_id())
 
-                # If there is no text but has figures it is a path.
-                if(not texts and figures):
+                # After obtaining all childs of the group that will be used for the generation of the new group, 
+                # this lists will be used to check the type of group (path or element).
 
-                    # Variables used to define a path.
-                    points = "" # String of data extracted.
-                    point = 0   # Farthedst point in the arrow.
-                    origin = 0  # Origin of the path.
-                    destiny = 0 # Destiny of the path.
+                # If there is no text but has figures it has to be a path.
+                if(not texts and figures):
+                    head: tuple[float, float] = 0   # Farthedst point in the arrow.
+                    origin: tuple[float, float] = 0  # Origin of the path.
+                    destiny: tuple[float, float] = 0 # Destiny of the path.
 
                     # For each figure checks if is a path o a polygon.
                     for figure in figures:
@@ -228,80 +168,72 @@ class Constructor(inkex.EffectExtension):
                             distance_BC = get_distance(point_B, point_C)
                             distance_AC = get_distance(point_A, point_C)
 
-                            # Gets the greatest hight and the vertex of it.
+                            # Gets the head of the arrow.
                             if(distance_AB > distance_BC and distance_AC > distance_BC):
-                                point = point_A
+                                head = point_A
                             if(distance_BC > distance_AC and distance_AB > distance_AC):
-                                point = point_B
+                                head = point_B
                             else:
-                                point = point_C
+                                head = point_C
 
                     # Adds the path to the list.
-                    lines.append(Path(origin, destiny, point))
-
-                # line tranformation before change direction.
+                    lines.append(Path(origin, destiny, head))
 
                 # It is a element of the Pathway.
                 elif(texts and figures):
+                    reactions: list[str]= []           # All code reaction in the element.
+                    id_element: str = ""               # ID of the element.
+                    type_element: str = ""             # Type of element.
+                    enzime: str = ""                   # Code of the enzime.
+                    position: tuple[float, float] = [] # Center of the element.
+                    size: float = 0                    # Size of the element.
+                    size_x: float = 0                  # Size of the element in the x axis.
+                    size_y: float = 0                  # Size of the element in the y axis.
+                    name: float = ""                   # Used for compounds if it is not using codes.
 
-                    # Variables used to define a element.
-                    reactions = []    # All code reaction in the element.
-                    id_element = ""   # ID of the element.
-                    type_element = "" # Type of element.
-                    enzime = ""       # Code of the enzime.
-                    position = []     # Center of the element.
-                    size = 0          # Size of the element.
-                    size_x = 0        # Size of the element in the x axis.
-                    size_y = 0        # Size of the element in the y axis.
-                    name = ""         # Used for compounds if it is not using codes.
-
-                    # Filters the text setting the type of element with it if it can. Also saves the text in the correct variable.
+                    # Filters the text setting the type of element with it if it can. Also saves the text in the correct variable. TODO
                     for text in texts:
-                        if(text == 'MBB'):
-                            type_element = 'MBB'
-                        elif(pattern2.match(text)):
-                            type_element = 'Inverse'
+                        if(pattern2.match(text)):
                             reactions.append(text)
                         elif(pattern3.match(text)):
-                            type_element = 'Reaction'
                             reactions.append(text)
                         elif(pattern4.match(text)):
                             enzime = text
-                        elif(pattern5.match(text) or pattern8.match(text) or pattern9.match(text)):
-                            if(pattern9.match(text)):
-                                id_element = text
-                                #text[:text.find('-')]
-                            elif(pattern8.match(text)):
-                                id_element = text[:-2]
-                            else:
-                                id_element = text
-                        elif(pattern6.match(text)):
-                            type_element = 'Compound'
-                            name = text
+                        elif(pattern5.match(text)):
+                            id_element = text
                         else:
-                            type_element = 'Compound'
                             name = text
 
                     # Iterates inside the figures and filters the data extracted.
                     for figure in figures:
                         figure = self.svg.getElementById(figure)
 
-                        # If it is an ellipse gets the center of it and the smallest size.
+                        # If it is an ellipse.
                         if(figure.tag_name == 'ellipse'):
+                            if(figure.get('fill') == 'lightgrey'):
+                                type_element = 'MBB'
+                            elif(figure.get('fill') == 'yellow'):
+                                type_element = 'Reaction'
+                            else:
+                                type_element = 'Inverse'
+
+                            # Obtains the center of it, size in x-axis and y-axis and the smallest size of between them.
                             position = (float(figure.get('cx')), float(figure.get('cy')))
                             size_x = format_num(figure.get('rx'))
                             size_y = format_num(figure.get('ry'))
                             size = min(size_x, size_y)
 
-                        # If it is a poligon then gets the points.
+                        # If it is a poligon.
                         elif(figure.tag_name == 'polygon'):
+
+                            # Obtains a list of all the points that forms it.
                             points = string_to_list(figure.get('points'))
 
                             # If it is filled with yellow then it will be an elemental reaction.
                             if(figure.get('fill') == 'yellow'):
                                 type_element = 'Elemental'
 
-                                # Gets the first to the fourth point of the octagon.
+                                # Gets the first to the fifth point of the octagon.
                                 x_A = float(points[0][0])
                                 y_A = float(points[0][1])
                                 x_B = float(points[1][0])
@@ -313,50 +245,51 @@ class Constructor(inkex.EffectExtension):
                                 x_E = float(points[4][0])
                                 y_E = float(points[4][1])
 
-                                # With this points calculates the center and size of the element.
+                                # With this points calculates the center and size in x-axis and y-axis and gets the smallest size.
                                 position = ((x_A + x_E) / 2, (y_A + y_E) / 2)
-                                size_x = math.sqrt(math.pow(((x_D + x_C) / 2) - x_B, 2))
-                                size_y = math.sqrt(math.pow(((y_A + y_B) / 2) - y_C, 2))
+                                size_x = sqrt(pow(((x_D + x_C) / 2) - x_B, 2))
+                                size_y = sqrt(pow(((y_A + y_B) / 2) - y_C, 2))
                                 size = min(size_x, size_y)
 
                             # If it has less or equal points than 5 it is a compound.
                             elif(len(points) <= 5):
                                 type_element = 'Compound'
 
-                                # Gets 2 diagonal points and the middle coordentate x.
+                                # Gets the first to the third point of the rectangle.
                                 x_A = float(points[0][0])
                                 y_A = float(points[0][1])
-                                x_B = float(points[2][0])
-                                y_B = float(points[2][1])
-                                x_C = float(points[1][0])
-                                y_C = float(points[1][1])
+                                x_B = float(points[1][0])
+                                y_B = float(points[1][1])
+                                x_C = float(points[2][0])
+                                y_C = float(points[2][1])
 
-                                # gets the center of the compound and x size.
-                                position = ((x_A + x_B) / 2, (y_A + y_B) / 2)
-                                size_x = abs(x_A - x_C)
-                                size_y = abs(y_A - y_B)
+                                # Gets the center of the compound, size in x-axis and y-axis.
+                                position = ((x_A + x_C) / 2, (y_A + y_C) / 2)
+                                size_x = abs(x_A - x_B)
+                                size_y = abs(y_A - y_C)
                                 size = size_x
                                 
-                    # Proceeds to set the element with the information obtained inside the list.
+                    # Proceeds to set the Group with the information obtained from the scraping.
                     if(type_element == 'MBB'):
                         groups_info.append(Group_info(add_metabolic_building_block(self, id_element, position[0], position[1], size), size_x, size_y))
                     elif(type_element == 'Reaction'):
                         groups_info.append(Group_info(add_reaction(self, id_element, reactions, enzime,  position[0], position[1], size), size_x, size_y))
                     elif(type_element == 'Elemental'):
-                        groups_info.append(Group_info(add_elemental_reaction(self, id_element, reactions[0], enzime, position[0], position[1], size), size_x, size_y))
+                        groups_info.append(Group_info(add_elemental_reaction(self, id_element, reactions, enzime, position[0], position[1], size), size_x, size_y))
                     elif(type_element == 'Inverse'):
-                        groups_info.append(Group_info(add_inverse_reaction(self, id_element, reactions[0], enzime, position[0], position[1], size), size_x, size_y))
+                        groups_info.append(Group_info(add_inverse_reaction(self, id_element, reactions, enzime, position[0], position[1], size), size_x, size_y))
                     elif(type_element == 'Compound'):
                         groups_info.append(Group_info(add_component(self, name, position[0], position[1], size), size_x, size_y))
 
-        # For each group created, applies the transformation of the graph so it will me draw in the correct spot.
+        # Once it has been defined all paths and groups is time to generate the new elements.
+
+        # For each group, applies the transformation of the graph so it will me draw in the correct spot.
         layer = self.svg.get_current_layer()
         for group_info in groups_info:
-
             group = group_info.get_group()
+
             # Iterates trough the childs in the group and changes the center coordinates with the transformation.
             for child in group.descendants():
-
                 if(child.tag_name == 'path'):
 
                     # For all the path elements.
@@ -375,18 +308,19 @@ class Constructor(inkex.EffectExtension):
             # Adds the group to the layer.
             layer.add(group)
 
+        # Here it will draw all path between the elements.
         for line in lines:
 
             # Variables for the paths.
-            nearest_orig = "" # ID of the nearest element to origin.
-            nearest_dest = "" # ID of the nearest element to destiny.
+            nearest_orig: str = "" # ID of the nearest element to origin.
+            nearest_dest: str = "" # ID of the nearest element to destiny.
             distance_orig = float("inf") # Distance to the nearest element to origin.
             distance_dest = float("inf") # Distance to the nearest element to destiny.
 
             # Applies the transformation, changes the direction of the arrow and gets the angle of the line to the x-axis.
             line.apply_transformation(transform)
             line.change_direction()
-            angle = get_angle_line(line.d, line.o)
+            angle = get_angle_line(line.get_d(), line.get_o())
 
             # Iterates trought all elements in groups for which the path interconects them.
             for group_info in groups_info:
@@ -395,21 +329,21 @@ class Constructor(inkex.EffectExtension):
                 size_x = group_info.get_size_x()
                 size_y = group_info.get_size_y()
                 
-                # It must be an metabolic_path_way.
-                if(is_metabolic_pathway_element(group)):
+                # It must be an metabolic_pathway.
+                if(is_metabolic_pathway_element(group.get_id())):
 
                     # Gets the center of the group.
                     group_center = (float(group.get('x')), float(group.get('y')))
 
                     # Gets the distance to the origin and destiny of this group.
-                    distance_o = math.sqrt(math.pow(group_center[0] - line.o[0], 2) + math.pow(group_center[1] - line.o[1], 2))
-                    distance_d = math.sqrt(math.pow(group_center[0] - line.d[0], 2) + math.pow(group_center[1] - line.d[1], 2))
+                    distance_o = sqrt(pow(group_center[0] - line.o[0], 2) + pow(group_center[1] - line.o[1], 2))
+                    distance_d = sqrt(pow(group_center[0] - line.d[0], 2) + pow(group_center[1] - line.d[1], 2))
 
                     # Gets the size of the element and the corrected distance to the line.
                     size_o = get_size(group.get_id(), size_x, size_y, angle)
-                    distance_o = distance_o - math.sqrt(math.pow(size_o[0], 2) + math.pow(size_o[1], 2))
+                    distance_o = distance_o - sqrt(pow(size_o[0], 2) + pow(size_o[1], 2))
                     size_d = get_size(group.get_id(), size_x, size_y, angle)
-                    distance_d = distance_d - math.sqrt(math.pow(size_d[0], 2) + math.pow(size_d[1], 2))
+                    distance_d = distance_d - sqrt(pow(size_d[0], 2) + pow(size_d[1], 2))
 
                     # Checks if the distance to the destiny is smaller, if it is then updates it.
                     if(distance_dest >= distance_d):

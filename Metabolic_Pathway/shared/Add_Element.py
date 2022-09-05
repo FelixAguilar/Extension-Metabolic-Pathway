@@ -117,7 +117,7 @@ def add_reaction(self, id, reactions, enzime, x, y, radius, unique = False, g_id
 
 
 # Generates a new inverse reaction in the current layer.
-def add_inverse_reaction(self, id, reaction, enzime, x, y, radius, unique = False, g_id = None):
+def add_inverse_reaction(self, id, reactions, enzime, x, y, radius, unique = False, g_id = None):
 
     # Minimum size of component is 11.
     if(radius < 11):
@@ -129,11 +129,17 @@ def add_inverse_reaction(self, id, reaction, enzime, x, y, radius, unique = Fals
     
     # Change font size format to svg.
     svg_font_size = svg_format(self, font_size, 'pt')
-    size_y = font_size
+    lines = 2 + len(reactions)
     size_x = font_size/3
-    group.add(add_text(x - len(id) * size_x, y - size_y, svg_font_size, id))
-    group.add(add_text(x - len(reaction) * size_x, y , svg_font_size, reaction))
-    group.add(add_text(x - len(enzime) * size_x + 4, y + size_y, svg_font_size, enzime))
+    size_y = font_size
+    index = 1 - lines / 2
+
+    group.add(add_text(x - len(id) * size_x, y + (index * size_y), svg_font_size, id))
+    index = index + 1
+    for reaction in reactions:
+        group.add(add_text(x - len(reaction) * size_x, y + (index * size_y), svg_font_size, reaction))
+        index = index + 1
+    group.add(add_text(x - len(enzime) * size_x + 4, y + (index * size_y), svg_font_size, enzime))
 
     # Values for the group.
     if(unique and g_id == None):
@@ -153,7 +159,7 @@ def add_inverse_reaction(self, id, reaction, enzime, x, y, radius, unique = Fals
 
 
 # Generates a new elemental reaction in the current layer.
-def add_elemental_reaction(self, id, reaction, enzime, x, y, radius):
+def add_elemental_reaction(self, id, reactions, enzime, x, y, radius):
     
     # Creates a group and adds all components to it.
     group = inkex.Group()
@@ -162,11 +168,17 @@ def add_elemental_reaction(self, id, reaction, enzime, x, y, radius):
 
     # Change font size format to svg.
     svg_font_size = svg_format(self, font_size, 'pt')
-    size_y = font_size
+    lines = 2 + len(reactions)
     size_x = font_size/3
-    group.add(add_text(x - len(id) * size_x, y - size_y, svg_font_size, id))
-    group.add(add_text(x - len(reaction) * size_x, y , svg_font_size, reaction))
-    group.add(add_text(x - len(enzime) * size_x + 4, y + size_y, svg_font_size, enzime))
+    size_y = font_size
+    index = 1 - lines / 2
+
+    group.add(add_text(x - len(id) * size_x, y + (index * size_y), svg_font_size, id))
+    index = index + 1
+    for reaction in reactions:
+        group.add(add_text(x - len(reaction) * size_x, y + (index * size_y), svg_font_size, reaction))
+        index = index + 1
+    group.add(add_text(x - len(enzime) * size_x + 4, y + (index * size_y), svg_font_size, enzime))
 
     # Values for the group.
     group.set('id', 'E ' + str(id))
