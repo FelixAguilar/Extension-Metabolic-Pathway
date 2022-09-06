@@ -89,7 +89,7 @@ class Constructor(inkex.EffectExtension):
 
     def effect(self):
 
-        # Patterns for the text inside the graph. TODO
+        # Patterns for the text inside the graph.
         pattern1 = re.compile("graph*")                                     # Graph identification pattern.
         pattern2 = re.compile("R[0-9][0-9][0-9][0-9][0-9]_rev")             # Reverse reaction code pattern.
         pattern3 = re.compile("R[0-9][0-9][0-9][0-9][0-9]")                 # Reaction code pattern.
@@ -128,12 +128,9 @@ class Constructor(inkex.EffectExtension):
                         if(child.tag_name == 'ellipse' or child.tag_name == 'polygon' or child.tag_name == 'path'):
                             figures.append(child.get_id())
 
-                # After obtaining all childs of the group that will be used for the generation of the new group, 
-                # this lists will be used to check the type of group (path or element).
-
                 # If there is no text but has figures it has to be a path.
                 if(not texts and figures):
-                    head: tuple[float, float] = 0   # Farthedst point in the arrow.
+                    head: tuple[float, float] = 0    # Furthest point in the arrow.
                     origin: tuple[float, float] = 0  # Origin of the path.
                     destiny: tuple[float, float] = 0 # Destiny of the path.
 

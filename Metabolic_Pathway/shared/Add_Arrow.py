@@ -1,51 +1,40 @@
-import inkex, re
-from inkex import PathElement, BaseElement
-from math import atan, atan2, sin, cos, pi
+from typing import Any
+import inkex
+from inkex import BaseElement
+from math import sin, cos, pi
+from shared.Geometry import get_transformation, get_angle_line, get_circle_size, get_regular_octogon_size, get_component_size
+from shared.Boleans import is_component, is_elemental_reaction
 
-def is_component(ID):
-    pattern = re.compile("C [0-9]+")
-    if(pattern.match(ID)):
-        return True
-    return False
-def is_elemental_reaction(string):
-    pattern = re.compile("E [0-9]+")
-    if(pattern.match(string)):
-            return True
-    return False
-def get_transformation(element):
-    t = str(element.get('transform'))
-
-    if(t == "None"):
-        return (0,0)
+# Function that using the id decides which function to use to obtain the size in x and y axis.
+def get_size(ID: str, size: float, angle: float) -> tuple[float, float]:
+    if(is_component(ID)):
+        return get_component_size(size, angle)
+    if(is_elemental_reaction(ID)):
+        return get_regular_octogon_size(size, angle)
     else:
-        start = t.find('(')
-        middle = t.find(',')
-        end = t.find(')')
+        return get_circle_size(size, angle)
 
-        if(middle == -1):
-            x = float(t[start + 1:end]) 
-            y = float(0)
+# Function that returns the coordenates from point A and B 
+def get_line_coordinates(center_A: tuple[float, float], size_A: tuple[float, float], center_B: tuple[float, float], size_B: tuple[float, float]) -> tuple[tuple[float, float], tuple[float, float]]:
+
+        # For x-axis.
+        if(center_A[0] > center_B[0]):
+            x_A = center_A[0] - size_A[0]
+            x_B = center_B[0] + size_B[0]
         else:
-            x = float(t[start + 1:middle]) 
-            y = float(t[middle + 2:end])
-        return (x,y)
-def add_line(origin, destination):
-    line = inkex.PathElement()
-    line.style = {'stroke': 'black', 'stroke-width': '1px', 'fill': 'none'}
-    line.path = 'M {},{} L {},{}'.format(origin[0], origin[1], destination[0], destination[1])
-    return line
-def add_triangle(center, rotation):
-    style = {'stroke': 'black', 'fill': 'black', 'stroke-width': '1px'}
-    elem = PathElement.star(center, (3, 3), 3)
-    elem.set('sodipodi:arg1', 0)
-    elem.set('sodipodi:arg2', 0)
-    elem.set('transform', 'rotate(' + str(rotation) + ', ' + str(center[0]) + ', ' + str(center[1]) + ')')
-    elem.style = style
-    return elem
-def get_angle_line(origin, destination):
-    x_delta = destination[0] - origin[0]
-    y_delta = destination[1] - origin[1]
-    return atan2(y_delta, x_delta) * 180 / pi
+            x_A = center_A[0] + size_A[0]
+            x_B = center_B[0] - size_B[0]
+
+        # For y-axis.
+        if(center_A[1] > center_B[1]):
+            y_A = center_A[1] - size_A[1]
+            y_B = center_B[1] + size_B[1]
+        else:
+            y_A = center_A[1] + size_A[1]
+            y_B = center_B[1] - size_B[1]
+
+        return ((x_A, y_A), (x_B, y_B))
+
 def add_straight_arrow(self, origin_id, destiantion_id, origin, destination, direction):
 
     # Calculate the angle of the arrow to the horizontal axis.
@@ -72,56 +61,10 @@ def add_straight_arrow(self, origin_id, destiantion_id, origin, destination, dir
     layer = self.svg.get_current_layer()
     layer.add(group)
     BaseElement.set_random_id(group, prefix = 'P ')
-def get_circle_size(size, angle):
-    return (abs(size * cos(angle * (pi / 180))), abs(size * sin(angle * (pi / 180))))
-def get_rectangle_size(size, angle):
 
-    center_base = size / 2
-    center_hight = size / 6 
+def add_arrow(self: Any, element_A: Any, element_B: Any, direction: bool) -> None:
 
-    vertex_angle = atan(center_hight / center_base) * 180 / pi
-
-    if((angle > vertex_angle and angle < 180 - vertex_angle) or (angle < -vertex_angle and angle > vertex_angle - 180)):
-        return (abs(center_base * cos(angle * (pi / 180))), center_hight)
-    else:
-        return (center_base, abs(center_hight * sin(angle * (pi / 180))))
-def get_octogon_size(size, angle):
-    
-    size += 4
-    angle = abs(angle)
-    hight = size * cos(22.5 * (pi / 180))
-
-    if (angle < 22.5 or angle > 157.5):
-        return (hight, abs(hight * sin(angle * (pi / 180))))
-    elif (angle > 67.5 and angle < 112.5):
-        return (abs(hight * cos(angle * (pi / 180))), hight)
-    else:
-        return (abs(hight * cos(angle * (pi / 180))), abs(hight * sin(angle * (pi / 180))))
-def get_size(ID, size, angle):
-    if(is_component(ID)):
-        return get_rectangle_size(size, angle)
-    if(is_elemental_reaction(ID)):
-        return get_octogon_size(size, angle)
-    else:
-        return get_circle_size(size, angle)
-def get_line_coordinates(center_A, size_A, center_B, size_B):
-        if(center_A[0] > center_B[0]):
-            x_A = center_A[0] - size_A[0]
-            x_B = center_B[0] + size_B[0]
-        else:
-            x_A = center_A[0] + size_A[0]
-            x_B = center_B[0] - size_B[0]
-
-        if(center_A[1] > center_B[1]):
-            y_A = center_A[1] - size_A[1]
-            y_B = center_B[1] + size_B[1]
-        else:
-            y_A = center_A[1] + size_A[1]
-            y_B = center_B[1] - size_B[1]
-
-        return ((x_A, y_A), (x_B, y_B))
-def add_arrow(self, element_A, element_B, direction):
-    # Obtains the properties of the elements.
+    # Obtains the properties of both elements.
     center_A = (float(element_A.get('x')), float(element_A.get('y')))
     size_A = float(element_A.get('size'))
     id_A = element_A.get_id()

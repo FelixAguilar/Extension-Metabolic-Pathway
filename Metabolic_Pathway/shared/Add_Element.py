@@ -20,6 +20,21 @@ def add_text(x, y, size, text):
         'font-style': 'normal' }
     return elem
 
+def add_line(origin: tuple[float, float], destination: tuple[float, float]) -> Any:
+    line = inkex.PathElement()
+    line.style = {'stroke': 'black', 'stroke-width': '1px', 'fill': 'none'}
+    line.path = 'M {},{} L {},{}'.format(origin[0], origin[1], destination[0], destination[1])
+    return line
+
+def add_triangle(center: tuple[float, float], rotation: float) -> Any:
+    style = {'stroke': 'black', 'fill': 'black', 'stroke-width': '1px'}
+    elem = PathElement.star(center, (3, 3), 3)
+    elem.set('sodipodi:arg1', 0)
+    elem.set('sodipodi:arg2', 0)
+    elem.set('transform', 'rotate(' + str(rotation) + ', ' + str(center[0]) + ', ' + str(center[1]) + ')')
+    elem.style = style
+    return elem
+
 # Adds a elipse to the given center position and radius.
 def add_elipse(cx, cy, radius, color):
     style = {'stroke': 'black', 'fill': color, 'stroke-width': '1px'}
@@ -115,7 +130,6 @@ def add_reaction(self, id, reactions, enzime, x, y, radius, unique = False, g_id
         BaseElement.set_random_id(group, prefix = 'R ')
     return group
 
-
 # Generates a new inverse reaction in the current layer.
 def add_inverse_reaction(self, id, reactions, enzime, x, y, radius, unique = False, g_id = None):
 
@@ -157,7 +171,6 @@ def add_inverse_reaction(self, id, reactions, enzime, x, y, radius, unique = Fal
         BaseElement.set_random_id(group, prefix = 'I ')
     return group
 
-
 # Generates a new elemental reaction in the current layer.
 def add_elemental_reaction(self, id, reactions, enzime, x, y, radius):
     
@@ -190,7 +203,6 @@ def add_elemental_reaction(self, id, reactions, enzime, x, y, radius):
     layer = self.svg.get_current_layer()
     layer.add(group)
     return group
-
 
 # Generates a new component in the current layer.
 def add_component(self, component, x, y, size, id = None):
