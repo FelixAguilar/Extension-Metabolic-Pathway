@@ -52,7 +52,7 @@ def add_octogon(cx: float, cy: float, radius: float, color: str) -> Any:
     return elem
 
 # Adds a rectangle to the given center position, high and base.
-def add_rectangle(cx: float, cy: float, base: float, hight: float):
+def add_rectangle(cx: float, cy: float, base: float, hight: float) -> Any:
     style = {'stroke': 'black', 'fill': 'none', 'stroke-width': '1px'}
     elem = Rectangle()
     elem.set('x', cx)
@@ -76,7 +76,7 @@ def add_metabolic_building_block(self: Any, id: str, x: float, y: float, radius:
     group.add(add_text(x - len(id) * size_x, y + size_y, id))
 
     # Values for the group.
-    group.set('id', 'M ' + str(id))
+    group.set('code', id)
     group.set('x', x)
     group.set('y', y)
     group.set('size', radius)
@@ -84,13 +84,14 @@ def add_metabolic_building_block(self: Any, id: str, x: float, y: float, radius:
     # Adds it to the current layer.
     layer = self.svg.get_current_layer()
     layer.add(group)
+    BaseElement.set_random_id(group, prefix = 'M ')
     return group
 
 # Generates a new reaction in the current layer.
-def add_reaction(self: Any, id: str, reactions: list[str], enzime: str, x: float, y: float, radius: float, unique = False, g_id = None) -> Any:
+def add_reaction(self: Any, id: str, reactions: list[str], enzime: str, x: float, y: float, radius: float) -> Any:
 
     # Creates a group and adds all components to it.
-    group = inkex.Group(id = id)
+    group = inkex.Group()
     group.add(add_elipse(x, y, radius, 'yellow'))
  
     # Change font size format to svg.
@@ -107,10 +108,7 @@ def add_reaction(self: Any, id: str, reactions: list[str], enzime: str, x: float
     group.add(add_text(x - len(enzime) * size_x + 4, y + (index * size_y), enzime))
 
     # Values for the group.
-    if(unique and g_id == None):
-        group.set('id', 'R ' + str(id))
-    if(g_id != None):
-        group.set('id', 'R ' + str(g_id))
+    group.set('code', id)
     group.set('x', x)
     group.set('y', y)
     group.set('size', radius)
@@ -118,16 +116,12 @@ def add_reaction(self: Any, id: str, reactions: list[str], enzime: str, x: float
     # Adds it to the current layer.
     layer = self.svg.get_current_layer()
     layer.add(group)
-    if(not unique):
-        BaseElement.set_random_id(group, prefix = 'R ')
+    BaseElement.set_random_id(group, prefix = 'R ')
+
     return group
 
 # Generates a new inverse reaction in the current layer.
-def add_inverse_reaction(self: Any, id: str, reactions: list[str], enzime: str, x: float, y: float, radius: float, unique = False, g_id = None) -> Any:
-
-    # Minimum size of component is 11.
-    if(radius < 11):
-        radius = 11
+def add_inverse_reaction(self: Any, id: str, reactions: list[str], enzime: str, x: float, y: float, radius: float) -> Any:
 
     # Creates a group and adds all components to it.
     group = inkex.Group()
@@ -147,10 +141,7 @@ def add_inverse_reaction(self: Any, id: str, reactions: list[str], enzime: str, 
     group.add(add_text(x - len(enzime) * size_x + 4, y + (index * size_y), enzime))
 
     # Values for the group.
-    if(unique and g_id == None):
-        group.set('id', 'I ' + str(id))
-    if(g_id != None):
-        group.set('id', 'I ' + str(g_id))
+    group.set('code', id)
     group.set('x', x)
     group.set('y', y)
     group.set('size', radius)
@@ -158,12 +149,11 @@ def add_inverse_reaction(self: Any, id: str, reactions: list[str], enzime: str, 
     # Adds it to the current layer.
     layer = self.svg.get_current_layer()
     layer.add(group)
-    if(not unique):
-        BaseElement.set_random_id(group, prefix = 'I ')
+    BaseElement.set_random_id(group, prefix = 'I ')
     return group
 
 # Generates a new elemental reaction in the current layer.
-def add_elemental_reaction(self, id, reactions, enzime, x, y, radius):
+def add_elemental_reaction(self: Any, id: str, reactions: list[str], enzime: str, x: float, y: float, radius: float) -> Any:
     
     # Creates a group and adds all components to it.
     group = inkex.Group()
@@ -184,7 +174,7 @@ def add_elemental_reaction(self, id, reactions, enzime, x, y, radius):
     group.add(add_text(x - len(enzime) * size_x + 4, y + (index * size_y), enzime))
 
     # Values for the group.
-    group.set('id', 'E ' + str(id))
+    group.set('code', id)
     group.set('x', x)
     group.set('y', y)
     group.set('size', radius)
@@ -192,14 +182,11 @@ def add_elemental_reaction(self, id, reactions, enzime, x, y, radius):
     # Adds it to the current layer.
     layer = self.svg.get_current_layer()
     layer.add(group)
+    BaseElement.set_random_id(group, prefix = 'E ')
     return group
 
 # Generates a new component in the current layer.
-def add_component(self, component, x, y, size, id = None):
-
-    # Minimum size for a component.
-    if(size < 13):
-        size = 13
+def add_component(self: Any, component: str, x: float, y: float, size: float) -> Any:
 
     # Creates a group with all the elements inside of it.
     group = inkex.Group()
@@ -207,8 +194,6 @@ def add_component(self, component, x, y, size, id = None):
     group.add(add_text(x - ((len(component)*(font_size/2))/2), y + (font_size/2) - 1, component))
 
     # Values for the group.
-    if(id != None):
-        group.set('id', 'C ' + str(id))
     group.set('x', x)
     group.set('y', y)
     group.set('size', size)
@@ -216,8 +201,6 @@ def add_component(self, component, x, y, size, id = None):
     # Gets the current layer and adds the group to it.
     layer = self.svg.get_current_layer()
     layer.add(group)
-
-    if(id == None):
-        BaseElement.set_random_id(group, prefix = 'C ')
+    BaseElement.set_random_id(group, prefix = 'C ')
 
     return group

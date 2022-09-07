@@ -20,29 +20,3 @@ def is_metabolic_pathway_element(ID: str) -> bool:
     if(pattern.match(ID)):
         return True
     return False
-
-def check_format_enzime(code: str) -> bool:
-    
-    # Patern that verifies it is a enxime.
-    pattern = re.compile("[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+")
-    if(pattern.match(code)):
-        return True
-    return False
-
-def check_format_numeric(string: str) -> bool:
-    if(string.isnumeric()):
-        return True
-    return False
-
-# Checks if the id is not used in the svg.
-def check_unique_id(id: str, ids: list[str]):
-
-    # Patern that verifies it is a number.
-    pattern = re.compile("[E|I|M|C|R] [0-9]+")
-
-    # Iterates through all the ids for a equal id.
-    for svg_id in ids:
-        svg_id = svg_id[2:]
-        if(svg_id == id):
-            return False
-    return True
