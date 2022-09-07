@@ -1,14 +1,7 @@
 import inkex, re
 from shared.Add_Arrow import add_arrow
-from shared.errors import *
-
-# Checks is the element given is a metabolic path way.
-def is_metabolic_pathway_element(svg_element):
-    pattern = re.compile("[E|I|M|C|R] [0-9]+")
-    if(pattern.match(svg_element.get_id())):
-            return True
-    return False
-
+from shared.Boleans import is_metabolic_pathway_element
+from shared.Errors import *
 
 class Constructor(inkex.EffectExtension):
     
@@ -21,13 +14,13 @@ class Constructor(inkex.EffectExtension):
 
         # Verifies that only two items are selected and they are elements of a metabolic pathway.
         if(len(self.svg.selection) != 2):
-            inkex.errormsg('To create a path there must be two elements selected. There are currently ' + str(len(self.svg.selection)) + ' items selected.')
+            inkex.errormsg(error_input_size + str(len(self.svg.selection)) + '.')
             return
         
         # Verifies that the two selected elements are from a metabolic pathway.
         for element in self.svg.selection:
-            if(not is_metabolic_pathway_element(element)):
-                inkex.errormsg('The selected elements do not belong to a metabolic pathway or it is a pathway of it.')
+            if(not is_metabolic_pathway_element(element.get_id())):
+                inkex.errormsg(error_metabolic_element)
                 return
 
         # Obtains the elements from the selections.
