@@ -1,56 +1,16 @@
-import inkex, re
+import inkex
 from shared.Add_Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
 from shared.Errors import *
-
-# Checks if the id is not used in the svg.
-def check_unique_id(self, id, verify):
-    if(verify):
-        pattern = re.compile("[E|M|I|R] [0-9]+")
-    
-        # Gets all ids in the svg.
-        svg_ids = []
-        for svg_id in self.svg.get_ids():
-            if(pattern.match(svg_id)):
-                svg_ids.append(svg_id)
-
-        # Iterates through all the ids for a equal id.
-        for svg_id in svg_ids:
-            element = self.svg.getElementById(svg_id)
-            if(element.get('code') == id):
-                inkex.errormsg(error_id)
-                return False
-    return True
-
-def check_format_numeric(string, error):
-    if(string.isnumeric()):
-        return True
-    inkex.errormsg(error)
-    return False
-
-# Checks that it folows the format of a enzime.
-def check_format_enzime(enzime: str) -> bool:
-    pattern = re.compile("^[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+$")
-    if(pattern.match(enzime)):
-        return True
-    inkex.errormsg(error_format_enzime)
-    return False
+from shared.Boleans import is_numeric, is_unique_id, check_format_reactions, check_format_enzime
 
 # From a list in string format obtains all the reactions inside a list.
 def string_to_list(list: str) -> list[str]:
     list = list.split(', ')
     return list
 
-# Checks if all reactions inside a list have the correct format.
-def check_format_reactions(reactions: list[str]) -> bool:
-    pattern = re.compile("^R[0-9][0-9][0-9][0-9][0-9](_rev)?$")
-    for reaction in reactions:
-        if(not pattern.match(reaction)):
-            inkex.errormsg(error_format_reaction)
-            return False
-    return True
-
 class Constructor(inkex.EffectExtension):
     
+    # Arguments from the menu.
     def add_arguments(self, pars):
         pars.add_argument('--ID_M', type=str, default='undefined', dest='ID_M', help="ID of element MDAG")
         pars.add_argument('--ID_R', type=str, default='undefined', dest='ID_R', help="ID of element RC")
@@ -72,35 +32,66 @@ class Constructor(inkex.EffectExtension):
 
     def effect(self):
 
+        # Selects which element draw using the current page of the menu and the current selected element in the drop down option. Before allowing, it checks if the information is correct.
         if self.options.tab == 'DAG':
             if self.options.type_M == 'Reactions':
                 if (self.options.ID_M == 'undefined' or self.options.KEGG_reaction_M == 'undefined' or self.options.KEGG_enzime_M == 'undefined'):
                     inkex.errormsg(error_empty_fields)
                 else:
                     reactions = string_to_list(self.options.KEGG_reaction_M)
-                    if(check_format_reactions(reactions) and check_format_enzime(self.options.KEGG_enzime_M) and check_unique_id(self, self.options.ID_M, self.options.unique_M)):
-                        add_reaction(self, self.options.ID_M, reactions, self.options.KEGG_enzime_M, self.options.x_M, self.options.y_M, self.options.size_M)
+                    if(check_format_reactions(reactions)):
+                        if(check_format_enzime(self.options.KEGG_enzime_M)):
+                            if(is_unique_id(self, self.options.ID_M, self.options.unique_M)):
+                                add_reaction(self, self.options.ID_M, reactions, self.options.KEGG_enzime_M, self.options.x_M, self.options.y_M, self.options.size_M)
+                            else:
+                                inkex.errormsg(error_id)
+                        else:
+                            inkex.errormsg(error_format_enzime)
+                    else:
+                        inkex.errormsg(error_format_reaction)
+
             elif self.options.type_M == 'Elemental_Reactions':
                 if (self.options.ID_M == 'undefined' or self.options.KEGG_reaction_M == 'undefined' or self.options.KEGG_enzime_M == 'undefined'):
                     inkex.errormsg(error_empty_fields)
                 else:
                     reactions = string_to_list(self.options.KEGG_reaction_M)
-                    if(check_format_reactions(reactions) and check_unique_id(self, self.options.ID_M, self.options.unique_M) and check_format_enzime(self.options.KEGG_enzime_M)):     
-                        add_elemental_reaction(self, self.options.ID_M, reactions, self.options.KEGG_enzime_M, self.options.x_M, self.options.y_M, self.options.size_M)
+                    if(check_format_reactions(reactions)):
+                        if(check_format_enzime(self.options.KEGG_enzime_M)):   
+                            if(is_unique_id(self, self.options.ID_M, self.options.unique_M)):  
+                                add_elemental_reaction(self, self.options.ID_M, reactions, self.options.KEGG_enzime_M, self.options.x_M, self.options.y_M, self.options.size_M)
+                            else:
+                                inkex.errormsg(error_id)
+                        else:
+                            inkex.errormsg(error_format_enzime)
+                    else:
+                        inkex.errormsg(error_format_reaction)
             else:
                 if(self.options.ID_M == 'undefined'):
                     inkex.errormsg(error_empty_fields_mmb)
                 else:
-                    if(check_format_numeric(self.options.ID_M, error_format_id) and check_unique_id(self, self.options.ID_M, self.options.unique_M)): 
-                        add_metabolic_building_block(self, self.options.ID_M, self.options.x_M, self.options.y_M, self.options.size_M)
+                    if(is_numeric(self.options.ID_M)):
+                        if(is_unique_id(self, self.options.ID_M, self.options.unique_M)): 
+                            add_metabolic_building_block(self, self.options.ID_M, self.options.x_M, self.options.y_M, self.options.size_M)
+                        else:
+                            inkex.errormsg(error_id)
+                    else:
+                        inkex.errormsg(error_numeric)
         else:
             if self.options.type_R == 'Reactions':
                 if (self.options.ID_R == 'undefined' or self.options.KEGG_reaction_R == 'undefined' or self.options.KEGG_enzime_R == 'undefined'):
                     inkex.errormsg(error_empty_fields)
                 else:
                     reactions = string_to_list(self.options.KEGG_reaction_R)
-                    if(check_format_reactions(reactions) and check_format_enzime(self.options.KEGG_enzime_R) and check_unique_id(self, self.options.ID_R, self.options.unique_R)):
-                        add_reaction(self, self.options.ID_R, reactions, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R)
+                    if(check_format_reactions(reactions)):
+                        if(check_format_enzime(self.options.KEGG_enzime_R)):
+                            if(is_unique_id(self, self.options.ID_R, self.options.unique_R)):
+                                add_reaction(self, self.options.ID_R, reactions, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R)
+                            else:
+                                inkex.errormsg(error_id)
+                        else:
+                            inkex.errormsg(error_format_enzime)
+                    else:
+                        inkex.errormsg(error_format_reaction)
             elif self.options.type_R == 'Component':
                 if (self.options.KEGG_reaction_R == 'undefined'):
                     inkex.errormsg(error_empty_fields_component)
@@ -111,8 +102,16 @@ class Constructor(inkex.EffectExtension):
                     inkex.errormsg(error_empty_fields)
                 else:
                     reactions = string_to_list(self.options.KEGG_reaction_R)
-                    if(check_format_reactions(reactions) and check_format_enzime(self.options.KEGG_enzime_R) and check_unique_id(self, self.options.ID_R, self.options.unique_R)):
-                        add_inverse_reaction(self, self.options.ID_R, reactions, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R)
+                    if(check_format_reactions(reactions)):
+                        if(check_format_enzime(self.options.KEGG_enzime_R)):
+                            if(is_unique_id(self, self.options.ID_R, self.options.unique_R)):
+                                add_inverse_reaction(self, self.options.ID_R, reactions, self.options.KEGG_enzime_R, self.options.x_R, self.options.y_R, self.options.size_R)
+                            else:
+                                inkex.errormsg(error_id)
+                        else:
+                            inkex.errormsg(error_format_enzime)
+                    else:
+                        inkex.errormsg(error_format_reaction)
 
 if __name__ == '__main__':
     Constructor().run()
