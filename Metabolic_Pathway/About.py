@@ -8,7 +8,7 @@ class Constructor(inkex.EffectExtension):
 
     # Execution of the extension.
     def effect(self):
-        inkex.errormsg("This extension doesn't do anything. Please use the other extensions.")
+        None
 
 if __name__ == '__main__':
     Constructor().run()

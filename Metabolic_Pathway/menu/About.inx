@@ -9,20 +9,21 @@ Este conjunto de extensiones han sido creadas por Felix Aguilar como parte del
 Trabajo de Fin de Grado (TFG).
 
 Estas facilitan la creación y modificación de rutas metabolicas por parte del
-usuario, añadiendo diferentes funcionalidades. En las otras pestañas de aqui, 
-se encuentra la explicación del funcionamiento de las diferentes extensiones.
+usuario, añadiendo diferentes funcionalidades. En las otras pestañas de Este 
+menu, se encuentra la explicación del funcionamiento de las diferentes 
+extensiones.
 
 Git Hub: https://github.com/FelixAguilar/Extension-Metabolic-Pathway
             </label>
         </page>
 
-        <page name='new_element' gui-text='Nuevo Elemento'>
+        <page name='format' gui-text='Adaptar Ruta'>
             <label xml:space="preserve">
             
             </label>
         </page>
 
-        <page name='change_size' gui-text='Cambiar Tamaño'>
+        <page name='new_element' gui-text='Nuevo Elemento'>
             <label xml:space="preserve">
             
             </label>
@@ -36,6 +37,12 @@ elementos con el cursor que no tengan ya un camino entre ellos en esa
 dirección. Una vez decidido este se ejecuta y permitirá indicar si se quiere 
 alterar la dirección de este camino, una vez decidido, este creará un camino 
 entre ambos puntos.
+            </label>
+        </page>
+        
+        <page name='change_size' gui-text='Cambiar Tamaño'>
+            <label xml:space="preserve">
+            
             </label>
         </page>
 
