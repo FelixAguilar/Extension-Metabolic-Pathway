@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension 
     xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>New Path</name>
+    <name>Nuevo camino</name>
     <id>new.path</id>
-        <param name="direction" type="bool" gui-text="Reverse direction of the arrow">false</param>
+        <param name="direction" type="bool" gui-text="Invertir la dirección del camino.">false</param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu name="Metabolic Pathways"/>
+            <submenu name="Rutas Metabolicas"/>
         </effects-menu>
     </effect>
     <script>

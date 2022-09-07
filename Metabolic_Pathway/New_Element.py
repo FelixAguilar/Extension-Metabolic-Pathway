@@ -1,4 +1,3 @@
-from email.policy import default
 import inkex, re
 from shared.Add_Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
 from shared.errors import *
@@ -57,6 +56,7 @@ class Constructor(inkex.EffectExtension):
         pars.add_argument('--y_R', type=int, default='30', dest='y_R', help="Position y of the element RC")
         pars.add_argument('--size_M', type=int, default='20', dest='size_M', help="Size of the element MDAG")
         pars.add_argument('--size_R', type=int, default='20', dest='size_R', help="Size of the element RC")
+        pars.add_argument('--unique_M', type=inkex.Boolean, default=False, dest='unique_M', help="If the element id needs to not be unique")
         pars.add_argument('--unique_R', type=inkex.Boolean, default=False, dest='unique_R', help="If the element id needs to not be unique")
 
     def effect(self):

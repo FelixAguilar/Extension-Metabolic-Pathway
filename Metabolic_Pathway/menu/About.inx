@@ -1,7 +1,6 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>About</name>
+    <name>Ayuda</name>
     <id>metabolic.pathway.about</id>
     <param name='tab' type="notebook">
         <page name='about' gui-text='Acerca de'>
@@ -50,7 +49,7 @@ entre ambos puntos.
     <effect>
         <object-type>path</object-type>
         <effects-menu>
-            <submenu name="Metabolic Pathways"/>
+            <submenu name="Rutas Metabolicas"/>
         </effects-menu>
     </effect>
     <script>

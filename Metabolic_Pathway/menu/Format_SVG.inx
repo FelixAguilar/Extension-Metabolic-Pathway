@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension 
     xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Format SVG</name>
+    <name>Adaptar Ruta Metabolica</name>
     <id>format.svg</id>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu name="Metabolic Pathways"/>
+            <submenu name="Rutas Metabolicas"/>
         </effects-menu>
     </effect>
     <script>

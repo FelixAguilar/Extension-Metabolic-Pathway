@@ -190,9 +190,7 @@ class Constructor(inkex.EffectExtension):
 
                     # Filters the text setting the type of element with it if it can. Also saves the text in the correct variable. TODO
                     for text in texts:
-                        if(pattern2.match(text)):
-                            reactions.append(text)
-                        elif(pattern3.match(text)):
+                        if(pattern2.match(text) or pattern3.match(text)):
                             reactions.append(text)
                         elif(pattern4.match(text)):
                             enzime = text
