@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Ayuda</name>
+    <name>1. Ayuda</name>
     <id>metabolic.pathway.about</id>
     <param name='tab' type="notebook">
         <page name='about' gui-text='Acerca de'>
