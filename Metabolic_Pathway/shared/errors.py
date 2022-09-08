@@ -7,3 +7,5 @@ error_empty_fields_component = 'El código de reacción para el componente no ha
 error_numeric = 'El codigo del elemento no es numérico.'
 error_metabolic_element = 'Los elementos seleccionados no pertenecen a una ruta metabólica o es un camino de esta.'
 error_input_size =  'Para crear un camino han de ser seleccionado dos elementos, actualmente hay seleccionados '
+error_exist_path_1 = 'Un camino en esta direcion ya existe entre '
+error_exist_path_2 = ' y '

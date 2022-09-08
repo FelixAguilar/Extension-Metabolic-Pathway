@@ -27,18 +27,17 @@ class Constructor(inkex.EffectExtension):
         element_A = self.svg.selection[0]
         element_B = self.svg.selection[1]
 
-        # Verifies that there is not another path between these two.
-        paths = []
-        all_ids = self.svg.get_ids()
+        # Verifies that there is not another path between these two elements in the same direction.
         pattern = re.compile("P [0-9]+")
-        for id in all_ids:
+        paths = []
+        for id in self.svg.get_ids():
             if(pattern.match(id)):
                 paths.append(id)
 
         for path_id in paths:
             path = self.svg.getElementById(path_id)
             if(path.get('id_dest') == element_A.get_id() and path.get('id_orig') == element_B.get_id()):
-                inkex.errormsg("Path exist between " + element_B.get_id() + " and " + element_A.get_id() + " in this direction.")
+                inkex.errormsg(error_exist_path_1 + element_B.get_id() + error_exist_path_2 + element_A.get_id() + ".")
                 return
 
         # Draws an arrow between elements.

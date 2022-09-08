@@ -22,11 +22,17 @@ def is_metabolic_pathway_element(ID: str) -> bool:
         return True
     return False
 
+# Checks if the reaction have the correct format.
+def check_format_reaction(reaction: str) -> bool:
+    pattern = re.compile("^R[0-9][0-9][0-9][0-9][0-9](_rev)?$")
+    if(pattern.match(reaction)):
+            return True
+    return False
+
 # Checks if all reactions inside a list have the correct format.
 def check_format_reactions(reactions: list[str]) -> bool:
-    pattern = re.compile("^R[0-9][0-9][0-9][0-9][0-9](_rev)?$")
     for reaction in reactions:
-        if(not pattern.match(reaction)):
+        if(not check_format_reaction(reaction)):
             return False
     return True
 

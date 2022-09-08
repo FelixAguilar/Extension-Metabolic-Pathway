@@ -1,32 +1,10 @@
+from typing import Any
 import inkex, re
-from re import S, T
 from shared.Add_Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
-from shared.Move_Arrows import move_arrows
-
-# Checks is the element given is a metabolic path way.
-def is_metabolic_pathway_element(svg_element):
-    pattern = re.compile("[E|I|M|C|R] [0-9]+")
-    if(pattern.match(svg_element.get_id())):
-            return True
-    return False
-
-def get_transformation(element):
-    t = str(element.get('transform'))
-
-    if(t == "None"):
-        return (0,0)
-    else:
-        start = t.find('(')
-        middle = t.find(',')
-        end = t.find(')')
-
-        if(middle == -1):
-            x = float(t[start + 1:end]) 
-            y = float(0)
-        else:
-            x = float(t[start + 1:middle]) 
-            y = float(t[middle + 2:end])
-        return (x,y)
+from shared.Boleans import is_metabolic_pathway_element, check_format_reaction, check_format_enzime
+from shared.Geometry import get_transformation
+from shared.Add_Arrow import add_arrow
+from shared.Errors import *
 
 class Constructor(inkex.EffectExtension):
     
@@ -45,58 +23,83 @@ class Constructor(inkex.EffectExtension):
             return
 
         # Verifies that the selected element is from a metabolic pathway.
-        if(not is_metabolic_pathway_element(self.svg.selection[0])):
-            inkex.errormsg('The selected element does not belong to a metabolic pathway or it is a pathway of it.')
+        if(not is_metabolic_pathway_element(self.svg.selection[0].get_id())):
+            inkex.errormsg(error_metabolic_element)
             return
 
         # Obtains the element and extracts the data.
         element = self.svg.selection[0]
-        position = (float(element.get('x')), float(element.get('y')))
-        transform = get_transformation(element)
-        size = int(element.get('size'))
         id = element.get_id()
-
+        transform = get_transformation(element)
+        position = (float(element.get('x')), float(element.get('y')))
+        size = int(element.get('size'))
+        
         # Obtains the current position and size for the element.
         x = position[0] + transform[0]
         y = position[1] + transform[1]
         size = size + self.options.difference
 
-        # Extracts the text of the element and formats it for next use.
-        texts = []
-        childs = element.descendants()
-        for child in childs:
-            if(child.get_id().find('text') != -1):
-                pattern1 = re.compile("[E|I|M|C|R][0-9]+")
-                pattern2 = re.compile("R[0-9]+_rev")
-                if(pattern2.match(child.text)):
-                    text = child.text[1:-4]
-                    texts.append(text)
-                elif(pattern1.match(child.text)):
-                    text = child.text[1:]
-                    texts.append(text)
-                else:    
-                    texts.append(child.text)
+        if(id.find('C') == -1):
+            # Extracts the text of the element and formats it for next use.
+            code = element.get('code')
+            reactions = []
+            enzime = ""
 
+            childs = element.descendants()
+            for child in childs:
+                if(child.tag_name == 'text'):
+                    if(check_format_reaction(child.text)):
+                        reactions.append(child.text)
+                    elif(check_format_enzime(child.text)):
+                        enzime = child.text
+        else:
+            childs = element.descendants()
+            for child in childs:
+                if(child.tag_name == 'text'):
+                    code = child.text
+            
         # Deletes the element.
         element.delete()
 
         # Creates the element.
+        id_new = ""
         if(id.find('R') != -1):
-            id = id[2:]
-            add_reaction(self, texts[0], texts[1], texts[2], x, y, size, g_id = id)
+            group = add_reaction(self, code, reactions, enzime, x, y, size)
+            id_new = group.get_id()
         elif(id.find('E') != -1):
-            add_elemental_reaction(self, texts[0], texts[1], texts[2], x, y, size)
+            group =add_elemental_reaction(self, code, reactions, enzime, x, y, size)
+            id_new = group.get_id()
         elif(id.find('M') != -1):
-            add_metabolic_building_block(self,  texts[0], x, y, size)
+            group = add_metabolic_building_block(self,  code, x, y, size)
+            id_new = group.get_id()
         elif(id.find('I') != -1):
-            id = id[2:]
-            add_inverse_reaction(self, texts[0], texts[1], texts[2], x, y, size, g_id = id)
+            group = add_inverse_reaction(self, code, reactions, enzime, x, y, size)
+            id_new = group.get_id()
         elif(id.find('C') != -1):
-            id = id[2:]
-            add_component(self, texts[0], x, y, size, id)
+            group = add_component(self, code, x, y, size)
+            id_new = group.get_id()
 
         # Restructures the arrows for this element.
-        move_arrows(self)
+        paths = []
+        all_ids = self.svg.get_ids()
+        pattern = re.compile("P [0-9]+")
+        for g_id in all_ids:
+            if(pattern.match(g_id)):
+                paths.append(g_id)
+
+        inter_path = []
+        for path_id in paths:
+            path = self.svg.getElementById(path_id)
+            if(path.get('id_dest') == id):
+                path.set('id_dest', id_new)
+                inter_path.append(path)
+            elif(path.get('id_orig') == id):
+                path.set('id_orig', id_new)
+                inter_path.append(path)
+
+        for path in inter_path:
+            add_arrow(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')), False)
+            path.delete()
 
 if __name__ == '__main__':
     Constructor().run()
