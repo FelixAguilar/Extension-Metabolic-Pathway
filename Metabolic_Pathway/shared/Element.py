@@ -1,5 +1,5 @@
-from typing import Any
 import inkex
+from typing import Any
 from inkex import TextElement, PathElement, Rectangle, BaseElement
 
 # Font size for all text created by the extension.
@@ -117,7 +117,6 @@ def add_reaction(self: Any, id: str, reactions: list[str], enzime: str, x: float
     layer = self.svg.get_current_layer()
     layer.add(group)
     BaseElement.set_random_id(group, prefix = 'R ')
-
     return group
 
 # Generates a new inverse reaction in the current layer.
@@ -202,5 +201,4 @@ def add_component(self: Any, component: str, x: float, y: float, size: float) ->
     layer = self.svg.get_current_layer()
     layer.add(group)
     BaseElement.set_random_id(group, prefix = 'C ')
-
     return group

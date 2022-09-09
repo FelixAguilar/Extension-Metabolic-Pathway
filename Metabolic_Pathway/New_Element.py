@@ -1,7 +1,7 @@
 import inkex
-from shared.Add_Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
-from shared.Errors import *
+from shared.Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
 from shared.Boleans import is_numeric, is_unique_id, check_format_reactions, check_format_enzime
+from shared.Errors import *
 
 # From a list in string format obtains all the reactions inside a list.
 def string_to_list(list: str) -> list[str]:
@@ -93,10 +93,10 @@ class Constructor(inkex.EffectExtension):
                     else:
                         inkex.errormsg(error_format_reaction)
             elif self.options.type_R == 'Component':
-                if (self.options.KEGG_reaction_R == 'undefined'):
+                if (self.options.ID_R == 'undefined'):
                     inkex.errormsg(error_empty_fields_component)
                 else:
-                    add_component(self, self.options.KEGG_reaction_R, self.options.x_R, self.options.y_R, self.options.size_R)
+                    add_component(self, self.options.ID_R, self.options.x_R, self.options.y_R, self.options.size_R)
             else:
                 if (self.options.ID_R == 'undefined' or self.options.KEGG_reaction_R == 'undefined' or self.options.KEGG_enzime_R == 'undefined'):
                     inkex.errormsg(error_empty_fields)

@@ -38,7 +38,7 @@ def check_format_reactions(reactions: list[str]) -> bool:
 
 # Checks that it folows the format of a enzime.
 def check_format_enzime(enzime: str) -> bool:
-    pattern = re.compile("^[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+$")
+    pattern = re.compile("^([0-9]+|\-)\.([0-9]+|\-)\.([0-9]+|\-)\.([0-9]+|\-)$")
     if(pattern.match(enzime)):
         return True
     return False
