@@ -1,10 +1,10 @@
-from typing import Any
 import inkex
+from typing import Any
 from inkex import BaseElement
 from math import sin, cos, pi
 from shared.Geometry import get_transformation, get_angle_line, get_circle_size, get_regular_octogon_size, get_component_size
 from shared.Boleans import is_component, is_elemental_reaction
-from shared.Add_Element import add_triangle, add_line
+from shared.Element import add_triangle, add_line
 
 # Function that using the id decides which function to use to obtain the size in x and y axis.
 def get_size(ID: str, size: float, angle: float) -> tuple[float, float]:

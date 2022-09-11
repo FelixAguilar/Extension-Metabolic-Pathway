@@ -1,6 +1,6 @@
 import inkex, re
-from shared.Add_Arrow import add_arrow
 from shared.Boleans import is_metabolic_pathway_element
+from shared.Arrow import add_arrow
 from shared.Errors import *
 
 class Constructor(inkex.EffectExtension):
@@ -24,8 +24,12 @@ class Constructor(inkex.EffectExtension):
                 return
 
         # Obtains the elements from the selections.
-        element_A = self.svg.selection[0]
-        element_B = self.svg.selection[1]
+        if(self.options.Direction):
+            element_A = self.svg.selection[0]
+            element_B = self.svg.selection[1]
+        else:
+            element_B = self.svg.selection[0]
+            element_A = self.svg.selection[1]
 
         # Verifies that there is not another path between these two elements in the same direction.
         pattern = re.compile("P [0-9]+")
@@ -39,9 +43,9 @@ class Constructor(inkex.EffectExtension):
             if(path.get('id_dest') == element_A.get_id() and path.get('id_orig') == element_B.get_id()):
                 inkex.errormsg(error_exist_path_1 + element_B.get_id() + error_exist_path_2 + element_A.get_id() + ".")
                 return
-
+            
         # Draws an arrow between elements.
-        add_arrow(self, element_B, element_A, self.options.Direction)
+        add_arrow(self, element_B, element_A, False)
 
 if __name__ == '__main__':
     Constructor().run()

@@ -1,10 +1,10 @@
 import inkex, re
 from typing import Any
 from math import sqrt, pow
-from shared.Add_Arrow import add_arrow
+from shared.Arrow import add_arrow
 from shared.Boleans import is_component, is_elemental_reaction, is_metabolic_pathway_element
 from shared.Geometry import get_rectangle_size, get_octogon_size, get_elipse_size, get_angle_line, get_transformation, get_distance
-from shared.Add_Element import add_metabolic_building_block, add_elemental_reaction, add_reaction, add_inverse_reaction, add_component
+from shared.Element import add_metabolic_building_block, add_elemental_reaction, add_reaction, add_inverse_reaction, add_component
 
 # Obtains from the string the number in float format.
 def format_num(number: str) -> float:

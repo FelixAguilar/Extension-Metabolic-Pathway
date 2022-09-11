@@ -1,9 +1,9 @@
 from typing import Any
 import inkex, re
-from shared.Add_Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
+from shared.Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
 from shared.Boleans import is_metabolic_pathway_element, check_format_reaction, check_format_enzime
 from shared.Geometry import get_transformation
-from shared.Add_Arrow import add_arrow
+from shared.Arrow import add_arrow
 from shared.Errors import *
 
 class Constructor(inkex.EffectExtension):

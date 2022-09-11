@@ -1,5 +1,5 @@
 from typing import Any
-from shared.Add_Element import font_size
+from shared.Element import font_size
 from math import atan, atan2, sin, cos, pi, sqrt, pow
 
 # Gets the distance from the center of the ellipse to the edge of it, this is indicated by the angle, the result is separated in x and y coordinates.
