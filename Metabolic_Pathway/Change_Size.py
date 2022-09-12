@@ -32,7 +32,7 @@ class Constructor(inkex.EffectExtension):
         id = element.get_id()
         transform = get_transformation(element)
         position = (float(element.get('x')), float(element.get('y')))
-        size = int(element.get('size'))
+        size = float(element.get('size'))
         
         # Obtains the current position and size for the element.
         x = position[0] + transform[0]
