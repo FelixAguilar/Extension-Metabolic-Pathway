@@ -7,6 +7,11 @@ class Constructor(inkex.EffectExtension):
     
     def effect(self):
 
+        # Verifies that at least one item is selected.
+        if(len(self.svg.selection) < 1):
+            inkex.errormsg('Para mover los caminos tiene que haber como minimo 1 elemento seleccionado.')
+            return
+
         # Obteins all the path ids in the svg.
         paths = []
         all_ids = self.svg.get_ids()
