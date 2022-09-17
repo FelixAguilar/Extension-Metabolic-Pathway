@@ -340,15 +340,16 @@ class Constructor(inkex.EffectExtension):
                     size_d = get_size(group.get_id(), size_x, size_y, angle)
                     distance_d = distance_d - sqrt(pow(size_d[0], 2) + pow(size_d[1], 2))
 
-                    # Checks if the distance to the destiny is smaller, if it is then updates it.
-                    if(distance_dest >= distance_d):
-                        distance_dest = distance_d
-                        nearest_dest = group
-
-                    # Checks if the distance to the origin is smaller, if it is then updates it.
-                    if(distance_orig >= distance_o):
-                        distance_orig = distance_o
-                        nearest_orig = group
+                    if(distance_d < distance_o):
+                        # Checks if the distance to the destiny is smaller, if it is then updates it.
+                        if(distance_dest > distance_d):
+                            distance_dest = distance_d
+                            nearest_dest = group
+                    else:
+                        # Checks if the distance to the origin is smaller, if it is then updates it.
+                        if(distance_orig > distance_o):
+                            distance_orig = distance_o
+                            nearest_orig = group
             
             # If neither of them is empty then draw the arrow.
             if(nearest_dest != "" and nearest_orig != ""):
