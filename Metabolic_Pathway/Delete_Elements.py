@@ -10,7 +10,7 @@ class Constructor(inkex.EffectExtension):
 
         # Verifies that at least one item is selected.
         if(len(self.svg.selection) < 1):
-            inkex.errormsg('Para eliminar tiene que haber como minimo 1 elemento seleccionado.')
+            inkex.errormsg(error_delete_none)
             return
 
         # Obtains the element and extracts the data.
