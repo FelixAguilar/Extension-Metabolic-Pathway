@@ -1,5 +1,5 @@
 import inkex
-from typing import Any
+from typing import Any, Tuple
 from inkex import BaseElement
 from math import sin, cos, pi
 from shared.Geometry import get_transformation, get_angle_line, get_circle_size, get_regular_octogon_size, get_component_size
@@ -7,7 +7,7 @@ from shared.Boleans import is_component, is_elemental_reaction
 from shared.Element import add_triangle, add_line
 
 # Function that using the id decides which function to use to obtain the size in x and y axis.
-def get_size(ID: str, size: float, angle: float) -> tuple[float, float]:
+def get_size(ID: str, size: float, angle: float) -> Tuple[float, float]:
     if(is_component(ID)):
         return get_component_size(size, angle)
     if(is_elemental_reaction(ID)):
@@ -16,7 +16,7 @@ def get_size(ID: str, size: float, angle: float) -> tuple[float, float]:
         return get_circle_size(size, angle)
 
 # Function that returns the coordenates from point A and B 
-def get_line_coordinates(center_A: tuple[float, float], size_A: tuple[float, float], center_B: tuple[float, float], size_B: tuple[float, float]) -> tuple[tuple[float, float], tuple[float, float]]:
+def get_line_coordinates(center_A: Tuple[float, float], size_A: Tuple[float, float], center_B: Tuple[float, float], size_B: Tuple[float, float]) -> Tuple[Tuple[float, float], Tuple[float, float]]:
 
         # For x-axis.
         if(center_A[0] > center_B[0]):

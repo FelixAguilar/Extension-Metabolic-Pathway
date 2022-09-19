@@ -1,5 +1,12 @@
 import re
-from typing import Any
+from typing import Any, List
+
+# Checks if the ID belongs to a path.
+def is_path(ID: str) -> bool:
+    pattern = re.compile("P [0-9]+")
+    if(pattern.match(ID)):
+        return True
+    return False
 
 # Checks if the ID belongs to a component.
 def is_component(ID: str) -> bool:
@@ -30,7 +37,7 @@ def check_format_reaction(reaction: str) -> bool:
     return False
 
 # Checks if all reactions inside a list have the correct format.
-def check_format_reactions(reactions: list[str]) -> bool:
+def check_format_reactions(reactions: List[str]) -> bool:
     for reaction in reactions:
         if(not check_format_reaction(reaction)):
             return False

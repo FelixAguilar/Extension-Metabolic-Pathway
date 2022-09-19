@@ -1,5 +1,5 @@
 import inkex
-from typing import Any
+from typing import Any, Tuple, List
 from inkex import TextElement, PathElement, Rectangle, BaseElement
 
 # Font size for all text created by the extension.
@@ -18,14 +18,14 @@ def add_text(x: float, y: float, text: str) -> Any:
     return elem
 
 # Adds a line between the two given points.
-def add_line(origin: tuple[float, float], destination: tuple[float, float]) -> Any:
+def add_line(origin: Tuple[float, float], destination: Tuple[float, float]) -> Any:
     elem = inkex.PathElement()
     elem.style = {'stroke': 'black', 'stroke-width': '1px', 'fill': 'none'}
     elem.path = 'M {},{} L {},{}'.format(origin[0], origin[1], destination[0], destination[1])
     return elem
 
 # Adds a triangle of defined size with the center in the given position, and rotation given.
-def add_triangle(center: tuple[float, float], rotation: float) -> Any:
+def add_triangle(center: Tuple[float, float], rotation: float) -> Any:
     style = {'stroke': 'black', 'fill': 'black', 'stroke-width': '1px'}
     elem = PathElement.star(center, (3, 3), 3)
     elem.set('sodipodi:arg1', 0)
@@ -88,7 +88,7 @@ def add_metabolic_building_block(self: Any, id: str, x: float, y: float, radius:
     return group
 
 # Generates a new reaction in the current layer.
-def add_reaction(self: Any, id: str, reactions: list[str], enzime: str, x: float, y: float, radius: float) -> Any:
+def add_reaction(self: Any, id: str, reactions: List[str], enzime: str, x: float, y: float, radius: float) -> Any:
 
     # Creates a group and adds all components to it.
     group = inkex.Group()
@@ -120,7 +120,7 @@ def add_reaction(self: Any, id: str, reactions: list[str], enzime: str, x: float
     return group
 
 # Generates a new inverse reaction in the current layer.
-def add_inverse_reaction(self: Any, id: str, reactions: list[str], enzime: str, x: float, y: float, radius: float) -> Any:
+def add_inverse_reaction(self: Any, id: str, reactions: List[str], enzime: str, x: float, y: float, radius: float) -> Any:
 
     # Creates a group and adds all components to it.
     group = inkex.Group()
@@ -152,7 +152,7 @@ def add_inverse_reaction(self: Any, id: str, reactions: list[str], enzime: str, 
     return group
 
 # Generates a new elemental reaction in the current layer.
-def add_elemental_reaction(self: Any, id: str, reactions: list[str], enzime: str, x: float, y: float, radius: float) -> Any:
+def add_elemental_reaction(self: Any, id: str, reactions: List[str], enzime: str, x: float, y: float, radius: float) -> Any:
     
     # Creates a group and adds all components to it.
     group = inkex.Group()

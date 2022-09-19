@@ -1,10 +1,11 @@
 import inkex
+from typing import List
 from shared.Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
 from shared.Boleans import is_numeric, is_unique_id, check_format_reactions, check_format_enzime
 from shared.Errors import *
 
 # From a list in string format obtains all the reactions inside a list.
-def string_to_list(list: str) -> list[str]:
+def string_to_list(list: str) -> List[str]:
     list = list.split(', ')
     return list
 
