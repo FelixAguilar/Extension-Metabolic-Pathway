@@ -1,5 +1,13 @@
-import inkex, re
+import inkex
+from operator import contains
 from shared.Arrow import add_arrow
+from shared.Boleans import is_path, is_metabolic_pathway_element
+from shared.Errors import *
+
+def redraw_paths(self, paths) -> None:
+    for path in paths:
+        add_arrow(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')), False)
+        path.delete()
 
 class Constructor(inkex.EffectExtension):
     
@@ -9,36 +17,42 @@ class Constructor(inkex.EffectExtension):
 
         # Verifies that at least one item is selected.
         if(len(self.svg.selection) < 1):
-            inkex.errormsg('Para mover los caminos tiene que haber como minimo 1 elemento seleccionado.')
+            inkex.errormsg(error_move_path)
             return
 
-        # Obteins all the path ids in the svg.
-        paths = []
-        all_ids = self.svg.get_ids()
-        pattern = re.compile("P [0-9]+")
-        for id in all_ids:
-            if(pattern.match(id)):
-                paths.append(id)
+        # Obteins all the elements selected.
+        def check_element(element) -> bool: return is_metabolic_pathway_element(element.get_id()) 
+        elements = list(filter(check_element, self.svg.selection))
 
-        # Removes all paths inside the selection.
-        for element in self.svg.selection:
-            if(pattern.match(element.get_id())):
-                paths.remove(element.get_id())
+        # If there is elements selected, it works as intended, if there is no 
+        # elements selected and all are paths then they are drawed again.
+        if(elements):
 
-        # Obtains all the paths that connects the selection with the rest of the svg.
-        inter_path = []
-        for element in self.svg.selection:
-            id = element.get_id()
-            if(not pattern.match(element.get_id())):
-                for path_id in paths:
-                    path = self.svg.getElementById(path_id)
-                    if(path.get('id_dest') == id or (path.get('id_orig') == id)):
-                        inter_path.append(path)
+            # Obteins all the path ids in the svg.
+            paths = list(filter(is_path, self.svg.get_ids()))
 
-        # For each path between the selection and the rest redraw the line and deletes the arrow.
-        for path in inter_path:
-            add_arrow(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')), False)
-            path.delete()
+            # Obtains all the paths that connects the selected elements between them and with the rest of the svg.
+            inter_paths = []
+            for path_id in paths:
+                path = self.svg.getElementById(path_id)
+                for element in elements:
+                    element_id = element.get_id()
+                    if(not contains(inter_paths, path) and (path.get('id_dest') == element_id or (path.get('id_orig') == element_id))):
+                        inter_paths.append(path)
+
+            # For the path list between the selection and the rest redraw the line and deletes the old one.
+            redraw_paths(self, inter_paths)
+
+        else:
+
+            # Obteins all the path in the selection.
+            def check_path(path) -> bool: return is_path(path.get_id())
+            paths = list(filter(check_path, self.svg.selection))
+
+            # Redraws paths.
+            if(paths):
+                redraw_paths(self, paths)
+
 
 if __name__ == '__main__':
     Constructor().run()

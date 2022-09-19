@@ -10,3 +10,4 @@ error_input_size =  'Para crear un camino han de ser seleccionado dos elementos,
 error_exist_path_1 = 'Un camino en esta direcion ya existe entre '
 error_exist_path_2 = ' y '
 error_delete_none = 'Para eliminar tiene que haber como minimo un elemento seleccionado.'
+error_move_path = 'Para mover los caminos tiene que haber como minimo 1 elemento seleccionado.'
