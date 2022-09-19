@@ -5,13 +5,10 @@
     <param name='tab' type="notebook">
         <page name='about' gui-text='Acerca de'>
             <label xml:space="preserve">
-Este conjunto de extensiones han sido creadas por Felix Aguilar como parte del
-Trabajo de Fin de Grado (TFG).
+Este conjunto de extensiones han sido creadas por Felix Aguilar como parte del Trabajo de Fin de Grado (TFG).
 
-Estas facilitan la creación y modificación de rutas metabolicas por parte del
-usuario, añadiendo diferentes funcionalidades. En las otras pestañas de Este 
-menu, se encuentra la explicación del funcionamiento de las diferentes 
-extensiones.
+Estas facilitan la creación y modificación de rutas metabolicas por parte del usuario, añadiendo diferentes funcionalidades. En las otras
+pestañas de este menu, se encuentra la explicación del funcionamiento de las diferentes extensiones.
 
 Git Hub: https://github.com/FelixAguilar/Extension-Metabolic-Pathway
             </label>
@@ -25,18 +22,15 @@ Git Hub: https://github.com/FelixAguilar/Extension-Metabolic-Pathway
 
         <page name='new_element' gui-text='Nuevo Elemento'>
             <label xml:space="preserve">
-            
+Esta extensión permite la creación de un elemento. Para ello se elige el tipo
             </label>
         </page>
 
         <page name='new_path' gui-text='Nuevo Camino'>
             <label xml:space="preserve">
-Esta extension permite al usuario añadir un camino entre dos elementos de la
-Ruta Metabolica, para ello antes de ejecutarla hay que seleccionar dos 
-elementos con el cursor que no tengan ya un camino entre ellos en esa 
-dirección. Una vez decidido este se ejecuta y permitirá indicar si se quiere 
-alterar la dirección de este camino, una vez decidido, este creará un camino 
-entre ambos puntos.
+Esta extension permite al usuario añadir un camino entre dos elementos de la Ruta Metabolica, para ello antes de ejecutarla hay que 
+seleccionar dos elementos con el cursor que no tengan ya un camino entre ellos en esa dirección. Una vez decidido este se ejecuta y 
+permitirá indicar si se quiere alterar la dirección de este camino, una vez decidido, este creará un camino entre ambos puntos.
             </label>
         </page>
         
@@ -48,6 +42,17 @@ entre ambos puntos.
 
         <page name='move_paths' gui-text='Mover Caminos'>
             <label xml:space="preserve">
+Esta extensión permite actualizar los caminos que tengan origen o destino a los elementos seleccionados. Para ello se selecciona un 
+conjunto de elementos y caminos que se quieren actualizar despues de un movimiento realizado y esta redibujará los caminos entre los 
+elementos seleccionados y el resto.
+
+Si no hay elementos seleccionados y solo hay caminos seleccionados estos serán redibujados en sus posiciones correctas.
+            </label>
+        </page>
+        <page name='delete_element' gui-text='Eliminar Elemento'>
+            <label xml:space="preserve">
+Esta extensión permite eliminar los elementos seleccionados, eliminando en el proceso aquellos caminos que conectan estos con los elementos
+que se mantendrán en la ruta metabolica. También permite eliminar caminos sin eliminar elementos.
             </label>
         </page>
 
