@@ -1,6 +1,6 @@
-import inkex, re
+import inkex
 from shared.Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
-from shared.Boleans import is_metabolic_pathway_element, check_format_reaction, check_format_enzime
+from shared.Boleans import is_metabolic_pathway_element, check_format_reaction, check_format_enzime, is_path
 from shared.Geometry import get_transformation
 from shared.Arrow import add_arrow
 from shared.Errors import *
@@ -16,18 +16,20 @@ class Constructor(inkex.EffectExtension):
         if(self.options.difference == 0):
             return
 
-        # Verifies that only one item is selected.
+        # Verifies that at least there is one item selected.
         if(len(self.svg.selection) < 1):
-            inkex.errormsg('To change size there must be one elements selected. There are currently ' + str(len(self.svg.selection)) + ' items selected.')
+            inkex.errormsg(error_size_element)
             return
 
-        # Verifies that the selected element is from a metabolic pathway.
-        for element in self.svg.selection:
-            if(not is_metabolic_pathway_element(element.get_id())):
-                inkex.errormsg(error_metabolic_element)
-                return
+        # Filters the selection so they are elements from a metabolic pathway.
+        def check_element(element) -> bool: return is_metabolic_pathway_element(element.get_id())
+        elements = list(filter(check_element, self.svg.selection))
 
-        for element in self.svg.selection:
+        # Restructures the arrows for this element.
+        paths = list(filter(is_path, self.svg.get_ids()))
+
+
+        for element in elements:
             
             # Obtains the element and extracts the data.
             id = element.get_id()
@@ -80,14 +82,6 @@ class Constructor(inkex.EffectExtension):
                 group = add_component(self, code, x, y, size)
                 id_new = group.get_id()
 
-            # Restructures the arrows for this element.
-            paths = []
-            all_ids = self.svg.get_ids()
-            pattern = re.compile("P [0-9]+")
-            for g_id in all_ids:
-                if(pattern.match(g_id)):
-                    paths.append(g_id)
-
             inter_path = []
             for path_id in paths:
                 path = self.svg.getElementById(path_id)
@@ -98,9 +92,9 @@ class Constructor(inkex.EffectExtension):
                     path.set('id_orig', id_new)
                     inter_path.append(path)
 
-            for path in inter_path:
-                add_arrow(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')), False)
-                path.delete()
+        for path in inter_path:
+            add_arrow(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')), False)
+            path.delete()
 
 if __name__ == '__main__':
     Constructor().run()

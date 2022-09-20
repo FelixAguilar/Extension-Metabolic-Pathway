@@ -1,5 +1,5 @@
 import inkex, re
-from typing import Any
+from typing import Any, List, Tuple
 from math import sqrt, pow
 from shared.Arrow import add_arrow
 from shared.Boleans import is_component, is_elemental_reaction, is_metabolic_pathway_element
@@ -14,7 +14,7 @@ def format_num(number: str) -> float:
     return float(number)
 
 # From a list in string format obtains all the points inside a list in float form.
-def string_to_list(list: str) -> list[tuple[float, float]]:
+def string_to_list(list: str) -> List[Tuple[float, float]]:
     points_list = list.split(' ')
     coordenates_list = []
     for point in points_list:
@@ -25,7 +25,7 @@ def string_to_list(list: str) -> list[tuple[float, float]]:
     return coordenates_list
 
 # Function that using the id decides which function to use to obtain the size in x and y axis.
-def get_size(ID: str, size_x: float, size_y: float, angle: float) -> tuple[float, float]:
+def get_size(ID: str, size_x: float, size_y: float, angle: float) -> Tuple[float, float]:
     if(is_component(ID)):
         return get_rectangle_size(size_x, size_y, angle)
     if(is_elemental_reaction(ID)):
@@ -37,17 +37,17 @@ def get_size(ID: str, size_x: float, size_y: float, angle: float) -> tuple[float
 class Path:
 
     # Constructor.
-    def __init__(self, o: tuple[float, float], d: tuple[float, float], p: tuple[float, float]) -> None:
+    def __init__(self, o: Tuple[float, float], d: Tuple[float, float], p: Tuple[float, float]) -> None:
         self.o: tuple[float, float] = o  # Tuple origin. [x,y]
         self.d: tuple[float, float] = d  # Tuple destiny. [x,y]
         self.p: tuple[float, float] = p  # Tuple arrow head. [x,y]
 
     # Gets for the atributes.
-    def get_o(self) -> tuple[float, float]:
+    def get_o(self) -> Tuple[float, float]:
         return self.o
-    def get_d(self) -> tuple[float, float]:
+    def get_d(self) -> Tuple[float, float]:
         return self.d
-    def get_p(self) -> tuple[float, float]:
+    def get_p(self) -> Tuple[float, float]:
         return self.p
 
     # Changes the direction of the arrow depending on the point of the arrow and changes de origin of the line for the head of the arrow.
