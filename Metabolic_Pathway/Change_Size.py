@@ -21,13 +21,16 @@ class Constructor(inkex.EffectExtension):
             inkex.errormsg(error_size_element)
             return
 
-        # Filters the selection so they are elements from a metabolic pathway.
+        # Filters the selection so they are only elements from a metabolic pathway.
         def check_element(element) -> bool: return is_metabolic_pathway_element(element.get_id())
         elements = list(filter(check_element, self.svg.selection))
 
-        # Restructures the arrows for this element.
-        paths = list(filter(is_path, self.svg.get_ids()))
+        if(not elements):
+            inkex.errormsg(error_size_element)
+            return
 
+        # Filters the svg elements so there are only paths.
+        paths = list(filter(is_path, self.svg.get_ids()))
 
         for element in elements:
             
@@ -92,9 +95,9 @@ class Constructor(inkex.EffectExtension):
                     path.set('id_orig', id_new)
                     inter_path.append(path)
 
-        for path in inter_path:
-            add_arrow(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')), False)
-            path.delete()
+            for path in inter_path:
+                add_arrow(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')), False)
+                path.delete()
 
 if __name__ == '__main__':
     Constructor().run()
