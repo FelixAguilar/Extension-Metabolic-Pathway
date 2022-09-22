@@ -29,8 +29,8 @@ class Constructor(inkex.EffectExtension):
             inkex.errormsg(error_size_element)
             return
 
-        # Filters the svg elements so there are only paths.
-        paths = list(filter(is_path, self.svg.get_ids()))
+        new_element_ids = []
+        old_element_ids = []
 
         for element in elements:
             
@@ -45,59 +45,62 @@ class Constructor(inkex.EffectExtension):
             y = position[1] + transform[1]
             size = size + self.options.difference
 
-            if(id.find('C') == -1):
-                # Extracts the text of the element and formats it for next use.
-                code = element.get('code')
-                reactions = []
-                enzime = ""
-
-                childs = element.descendants()
-                for child in childs:
-                    if(child.tag_name == 'text'):
-                        if(check_format_reaction(child.text)):
-                            reactions.append(child.text)
-                        elif(check_format_enzime(child.text)):
-                            enzime = child.text
+            if(size <= 0):
+                inkex.errormsg(error_negative_size_1 + id + error_negative_size_2)
             else:
-                childs = element.descendants()
-                for child in childs:
-                    if(child.tag_name == 'text'):
-                        code = child.text
+                if(id.find('C') == -1):
+                    # Extracts the text of the element and formats it for next use.
+                    code = element.get('code')
+                    reactions = []
+                    enzime = ""
+
+                    childs = element.descendants()
+                    for child in childs:
+                        if(child.tag_name == 'text'):
+                            if(check_format_reaction(child.text)):
+                                reactions.append(child.text)
+                            elif(check_format_enzime(child.text)):
+                                enzime = child.text
+                else:
+                    childs = element.descendants()
+                    for child in childs:
+                        if(child.tag_name == 'text'):
+                            code = child.text
+                    
+                # Deletes the element.
+                element.delete()
+
+                # Creates the element.
+                if(id.find('R') != -1): group = add_reaction(self, code, reactions, enzime, x, y, size)
+                elif(id.find('E') != -1): group =add_elemental_reaction(self, code, reactions, enzime, x, y, size)
+                elif(id.find('M') != -1): group = add_metabolic_building_block(self,  code, x, y, size)
+                elif(id.find('I') != -1): group = add_inverse_reaction(self, code, reactions, enzime, x, y, size)
+                elif(id.find('C') != -1): group = add_component(self, code, x, y, size)
                 
-            # Deletes the element.
-            element.delete()
+                old_element_ids.append(id)
+                new_element_ids.append(group.get_id())
 
-            # Creates the element.
-            id_new = ""
-            if(id.find('R') != -1):
-                group = add_reaction(self, code, reactions, enzime, x, y, size)
-                id_new = group.get_id()
-            elif(id.find('E') != -1):
-                group =add_elemental_reaction(self, code, reactions, enzime, x, y, size)
-                id_new = group.get_id()
-            elif(id.find('M') != -1):
-                group = add_metabolic_building_block(self,  code, x, y, size)
-                id_new = group.get_id()
-            elif(id.find('I') != -1):
-                group = add_inverse_reaction(self, code, reactions, enzime, x, y, size)
-                id_new = group.get_id()
-            elif(id.find('C') != -1):
-                group = add_component(self, code, x, y, size)
-                id_new = group.get_id()
+        # Filters the svg elements so there are only paths.
+        paths = list(filter(is_path, self.svg.get_ids()))
 
-            inter_path = []
-            for path_id in paths:
-                path = self.svg.getElementById(path_id)
-                if(path.get('id_dest') == id):
-                    path.set('id_dest', id_new)
-                    inter_path.append(path)
-                elif(path.get('id_orig') == id):
-                    path.set('id_orig', id_new)
-                    inter_path.append(path)
+        inter_path = []
+        for path_id in paths:
+            change = False
+            path = self.svg.getElementById(path_id)
+            
+            for old_id, new_id in zip(old_element_ids, new_element_ids):
+                if(path.get('id_dest') == old_id):
+                    path.set('id_dest', new_id)
+                    change = True
+                if(path.get('id_orig') == old_id):
+                    path.set('id_orig', new_id)
+                    change = True
+            if(change):
+                inter_path.append(path)
 
-            for path in inter_path:
-                add_arrow(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')), False)
-                path.delete()
+        for path in inter_path:
+            add_arrow(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')), False)
+            path.delete()
 
 if __name__ == '__main__':
     Constructor().run()
