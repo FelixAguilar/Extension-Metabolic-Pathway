@@ -97,6 +97,7 @@ class Constructor(inkex.EffectExtension):
         pattern5 = re.compile("^([0-9]+(\-[0-9]+)?(_r)?)$")                 # ID code pattern.
         pattern7 = re.compile("E *")                                        # Elemental reaction graph ID pattern.
 
+        graph: Any
         lines: list[Path] = []              # List that will contain all the paths of the graph.
         groups_info: list[Group_info] = []  # List that will contain all the groups of the graph.
         transform: tuple[float, float] = [] # Tuple that will indicate which transformation must be applied to the elements of the graph.
@@ -111,8 +112,8 @@ class Constructor(inkex.EffectExtension):
 
             # If the id indicates the graph itself, the transformation is extracted.
             if(pattern1.match(id)):
-                element = self.svg.getElementById(id)
-                transform = get_transformation(element)
+                graph = self.svg.getElementById(id)
+                transform = get_transformation(graph)
             else:
                 texts: list[str] = []   # List that contains all text inside a element.
                 figures: list[str] = [] # List that contains all figures ids inside a element.
@@ -356,7 +357,7 @@ class Constructor(inkex.EffectExtension):
                 add_arrow(self, nearest_dest, nearest_orig, False)
 
         # Deletes old graph.
-        self.svg.getElementById('graph0').delete()
+        graph.delete()
 
 if __name__ == '__main__':
     Constructor().run()

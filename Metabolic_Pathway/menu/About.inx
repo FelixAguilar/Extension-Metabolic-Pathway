@@ -8,55 +8,85 @@
 Este conjunto de extensiones han sido creadas por Felix Aguilar como parte del Trabajo de Fin de Grado (TFG).
 
 Estas facilitan la creación y modificación de rutas metabolicas por parte del usuario, añadiendo diferentes funcionalidades. En las otras
-pestañas de este menu, se encuentra la explicación del funcionamiento de las diferentes extensiones.
+pestañas de este menu, se encuentra la explicación del funcionamiento de las diferentes extensiones incluidas en el paquete.
 
 Git Hub: https://github.com/FelixAguilar/Extension-Metabolic-Pathway
             </label>
         </page>
-
         <page name='format' gui-text='Adaptar Ruta'>
             <label xml:space="preserve">
-            
+Esta extensión permite al usuario adaptar una ruta metabólica que no utilice el formato adecuado para el uso de las extensiones.
+
+Para ello la ruta metabólica ha de cumplir tres cosas:
+
+    Ha de ser formada por grupos, cada grupo ha de contener todos los componentes que forman parte de un elemento de la ruta metabólica.
+
+    Ha de contener todo dentro de un grupo con la etiqueta que como minimo comenzará con la palabra "graph".
+
+    A la hora de utilizar esta extensión no ha de haber nada seleccionado por el usuario.
             </label>
         </page>
-
         <page name='new_element' gui-text='Nuevo Elemento'>
             <label xml:space="preserve">
-Esta extensión permite la creación de un elemento. Para ello se elige el tipo
+Esta extensión permite al usuario la creación de un elemento segun los diferentes parametros que introduzca. 
+
+Para ello, el usuario elige para que tipo de ruta va a crear el elemento, Metablolic-DAG o Reaction-Compound. Una vez elegida toca
+seleccionar el tipo de elemento que se quiere añadir, el conjunto de estos disponibles depende del tipo de ruta seleccionado.
+
+Una vez decidido, hay que rellenar los diferentes campos de texto con la informacion dependiendo del tipo de elemento, la posicion en x e y
+del elemento junto con el tamaño de este es compartido por los diferentes elementos y se utilizarán siempre. Sin embargo los demas campos
+no siempre se utilizarán:
+
+    Tanto Reaccion, Reaccion Elemental como Reaccion Inversa siempre utilizarán los campos de Codigo del elemento, Código de la reacción en
+    el KEGG y Código de la enzima en el KEGG.
+
+    El Bloque Constructor Metabólico solo utilizará el Código del Elemento, indicando asi el número de la ruta metabólica a la que hace
+    referencia.
+
+    El Compuesto solo utilizará el Código del Elemento, el cual indicará el código o nombre de este.
+
+Ademas de la información se puede indicar si se quiere que el elemento sea único, por ello si se activa esta opción, verificará si hay
+algun elemento en el SVG con el codigo del elemento introduccido, este no funncionará con un Compuesto.
+
+Si se utiliza el "Live Preview" o se aplica, se generará el elemento con las propiedades indicadas.
             </label>
         </page>
-
         <page name='new_path' gui-text='Nuevo Camino'>
             <label xml:space="preserve">
-Esta extension permite al usuario añadir un camino entre dos elementos de la Ruta Metabolica, para ello antes de ejecutarla hay que 
-seleccionar dos elementos con el cursor que no tengan ya un camino entre ellos en esa dirección. Una vez decidido este se ejecuta y 
-permitirá indicar si se quiere alterar la dirección de este camino, una vez decidido, este creará un camino entre ambos puntos.
+Esta extensión permite al usuario añadir un camino entre dos elementos de la Ruta Metabolica.
+
+Para ello antes de ejecutarla hay que seleccionar dos elementos con el cursor que no tengan ya un camino entre ellos en esa dirección. Una
+vez decidido este se ejecuta y permitirá indicar si se quiere alterar la dirección de este camino, una vez decidido, este creará un camino
+entre ambos elementos.
             </label>
         </page>
-        
         <page name='change_size' gui-text='Cambiar Tamaño'>
             <label xml:space="preserve">
-            
+Esta extensión permite que el usuario cambie el tamaño de un conjunto de elementos.
+
+Para ello antes de ejecutarla, el usuario ha de seleccionar un conjunto de elementos los cuales quiere cambiar de tamaño, a continuación se
+indicará la diferencia de tamaño a aplicar, de forma que este puede ser negativo para disminuir el tamaño o positivo para augmentarlo.
+
+Además de cambiar de tamaño esta extension actualiza los caminos para que conecten con el elemento con diferente tamaño.
             </label>
         </page>
-
-        <page name='move_paths' gui-text='Mover Caminos'>
+        <page name='move_paths' gui-text='Actualizar Caminos'>
             <label xml:space="preserve">
-Esta extensión permite actualizar los caminos que tengan origen o destino a los elementos seleccionados. Para ello se selecciona un 
-conjunto de elementos y caminos que se quieren actualizar despues de un movimiento realizado y esta redibujará los caminos entre los 
-elementos seleccionados y el resto.
+Esta extensión permite actualizar los caminos que tengan origen o destino a los elementos seleccionados. 
 
-Si no hay elementos seleccionados y solo hay caminos seleccionados estos serán redibujados en sus posiciones correctas.
+Para ello se selecciona un conjunto de elementos y caminos que se quieren actualizar despues de un movimiento realizado y esta redibujará
+los caminos que conecten en almenos un elemento.
+
+Si no hay elementos seleccionados y solo hay caminos seleccionados estos serán redibujados conectando los elementos indicados.
             </label>
         </page>
         <page name='delete_element' gui-text='Eliminar Elemento'>
             <label xml:space="preserve">
-Esta extensión permite eliminar los elementos seleccionados, eliminando en el proceso aquellos caminos que conectan estos con los elementos
-que se mantendrán en la ruta metabolica. También permite eliminar caminos sin eliminar elementos.
+Esta extensión permite eliminar elementos o caminos seleccionados.
+
+A la hora de eliminar elementos, también eliminará los caminos que conectan este con elementos que no se vayan a borrar.
             </label>
         </page>
-
-
     </param>
     <effect>
         <object-type>path</object-type>
