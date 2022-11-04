@@ -51,7 +51,7 @@ def get_octogon_size(size_x: float, size_y: float, angle: float) -> Tuple[float,
         return (abs(size_x * cos(angle * (pi / 180))), abs(size_y * sin(angle * (pi / 180))))
 
 # Same as the above one but this time is for a regular octogon.
-def get_regular_octogon_size(size: float, angle: float)  -> Tuple[float, float]:
+def get_regular_octogon_size(size: float, angle: float) -> Tuple[float, float]:
     
     size += 4
     angle = abs(angle)

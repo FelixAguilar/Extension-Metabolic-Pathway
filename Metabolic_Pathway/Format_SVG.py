@@ -1,5 +1,6 @@
 import inkex, re
 from typing import Any, List, Tuple
+from inkex import Transform
 from math import sqrt, pow
 from shared.Arrow import add_arrow
 from shared.Boleans import is_component, is_elemental_reaction, is_metabolic_pathway_element
@@ -287,17 +288,29 @@ class Constructor(inkex.EffectExtension):
             # Iterates trough the childs in the group and changes the center coordinates with the transformation.
             for child in group.descendants():
                 if(child.tag_name == 'path'):
-
-                    # For all the path elements.
-                    child.set('sodipodi:cx', float(child.get('sodipodi:cx')) + transform[0])
-                    child.set('sodipodi:cy', float(child.get('sodipodi:cy')) + transform[1])
-
-                    # For the polygons inside a elemental reaction.
-                    if(pattern7.match(group.get_id())):
-                        child.set('transform', 'rotate(23, ' + str(child.get('sodipodi:cx')) + ', ' + str(child.get('sodipodi:cy')) + ')')
+                    d = child.get('d')[2:]
+                    new_d = 'M '
+                    while(d):
+                        pos = d.find(' L ')
+                        if (pos != -1):
+                            point = d[0:pos]
+                            d = d[pos + 3:]
+                        else:
+                            point = d[0:-2]
+                            d = ''
+                        point = point.split(",")
+                        point = (str(float(point[0]) + transform[0]), str(float(point[1]) + transform[1]))
+                        point = point[0] + ',' +  point [1]
+                        if(d):
+                            new_d += point + ' L '
+                        else:
+                            new_d += point + ' z'
+                    child.set('d', new_d)
+                elif(child.tag_name == 'circle'):
+                    child.set('cx', float(child.get('cx')) + transform[0])
+                    child.set('cy', float(child.get('cy')) + transform[1])
                 else:
-
-                    # For text and rectangles.
+                    # For text and rectangles and circles.
                     child.set('x', float(child.get('x')) + transform[0])
                     child.set('y', float(child.get('y')) + transform[1])
 

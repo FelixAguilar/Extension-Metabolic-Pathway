@@ -1,6 +1,7 @@
 import inkex
 from typing import Any, Tuple, List
-from inkex import TextElement, PathElement, Rectangle, BaseElement
+from inkex import TextElement, PathElement, Rectangle, BaseElement, Circle, elements
+from math import cos, sin, pi
 
 # Font size for all text created by the extension.
 font_size: float = 10
@@ -19,7 +20,7 @@ def add_text(x: float, y: float, text: str) -> Any:
 
 # Adds a line between the two given points.
 def add_line(origin: Tuple[float, float], destination: Tuple[float, float]) -> Any:
-    elem = inkex.PathElement()
+    elem = PathElement()
     elem.style = {'stroke': 'black', 'stroke-width': '1px', 'fill': 'none'}
     elem.path = 'M {},{} L {},{}'.format(origin[0], origin[1], destination[0], destination[1])
     return elem
@@ -27,27 +28,50 @@ def add_line(origin: Tuple[float, float], destination: Tuple[float, float]) -> A
 # Adds a triangle of defined size with the center in the given position, and rotation given.
 def add_triangle(center: Tuple[float, float], rotation: float) -> Any:
     style = {'stroke': 'black', 'fill': 'black', 'stroke-width': '1px'}
-    elem = PathElement.star(center, (3, 3), 3)
+    """elem = PathElement.star(center, (3, 3), 3)
     elem.set('sodipodi:arg1', 0)
-    elem.set('sodipodi:arg2', 0)
-    elem.set('transform', 'rotate(' + str(rotation) + ', ' + str(center[0]) + ', ' + str(center[1]) + ')')
+    elem.set('sodipodi:arg2', 0)"""
+
+    elem = PathElement()
+    elem.set('d', 'M ' + str(center[0]) + ',' + str(center[1] - 3) +
+             ' L ' + str(center[0] + 2) + ',' + str(center[1] + 3) +
+             ' L ' + str(center[0] - 2) + ',' + str(center[1] + 3) +
+             ' L ' + str(center[0]) + ',' + str(center[1] - 3) + ' z')
+    elem.set('transform', 'rotate(' + str(rotation + 90) + ', ' + str(center[0]) + ', ' + str(center[1]) + ')')
     elem.style = style
     return elem
 
 # Adds a elipse to the given center position and radius.
 def add_elipse(cx: float, cy: float, radius: float, color: str) -> Any:
     style = {'stroke': 'black', 'fill': color, 'stroke-width': '1px'}
-    elem = PathElement.arc((cx, cy), radius)
+    #elem = PathElement.arc((cx, cy), radius)
+    elem = Circle()
+    elem.set('r', radius)
+    elem.set('cx', cx)
+    elem.set('cy', cy)
     elem.style = style
     return elem
 
 # Adds a octogon to the given center position and side.
 def add_octogon(cx: float, cy: float, radius: float, color: str) -> Any:
     style = {'stroke': 'black', 'fill': color, 'stroke-width': '1px'}
-    elem = PathElement.star((cx, cy), (radius, radius), 8)
-    elem.set('sodipodi:arg1', 0)
-    elem.set('sodipodi:arg2', 0)
-    elem.set('transform', 'rotate(23, ' + str(cx) + ', ' + str(cy) + ')')
+    #elem = PathElement.star((cx, cy), (radius, radius), 8)
+    #elem = elements._polygons.PathElement._starpath((cx, cy), 8,  (radius, radius), False, True)
+
+    angle = 22.5 * (pi / 180)
+
+    elem = PathElement()
+    elem.set('d', 'M ' + str (cx + radius * cos(angle)) + ',' + str(cy + radius * sin(angle)) +
+               ' L ' + str(cx + radius * cos(angle*3)) + ',' + str(cy + radius * sin(angle*3)) +
+               ' L ' + str(cx + radius * cos(angle*5)) + ',' + str(cy + radius * sin(angle*5)) +
+               ' L ' + str(cx + radius * cos(angle*7)) + ',' + str(cy + radius * sin(angle*7)) +
+               ' L ' + str(cx + radius * cos(angle*9)) + ',' + str(cy + radius * sin(angle*9)) +
+               ' L ' + str(cx + radius * cos(angle*11)) + ',' + str(cy + radius * sin(angle*11)) +
+               ' L ' + str(cx + radius * cos(angle*13)) + ',' + str(cy + radius * sin(angle*13)) +
+               ' L ' + str(cx + radius * cos(angle*15)) + ',' + str(cy + radius * sin(angle*15)) +
+               ' L ' + str(cx + radius * cos(angle)) + ',' + str(cy + radius * sin(angle)) + ' z')
+
+    #elem.set('transform', 'rotate(23, ' + str(cx) + ', ' + str(cy) + ')')
     elem.style = style
     return elem
 
