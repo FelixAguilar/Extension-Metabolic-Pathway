@@ -1,6 +1,6 @@
 import inkex
 from typing import Any, Tuple, List
-from inkex import TextElement, PathElement, Rectangle, BaseElement, Circle, elements
+from inkex import TextElement, PathElement, Rectangle, BaseElement, Circle
 from math import cos, sin, pi
 
 # Font size for all text created by the extension.

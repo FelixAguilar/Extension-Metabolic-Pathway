@@ -4,7 +4,7 @@
     <name>2. Nuevo elemento</name>
     <id>new.element</id>
     <param name="tab" type="notebook">
-        <page name="DAG" gui-text="Metabolismo-DAG">
+        <page name="DAG" gui-text="DAG Metabolico">
             <param name="type_M" type="optiongroup" appearance="combo" gui-text="Tipo de elemento:">  ➎
                 <option value="Reactions">Reacción</option>
                 <option value="Elemental_Reactions">Reacción Elemental</option>
@@ -18,7 +18,7 @@
             <param name="size_M" type="int" min="0" max="180" gui-text="Tamaño del elemento:">30</param>
             <param name="unique_M" type="bool" gui-text="El código del elemento ha de ser único.">false</param>
         </page>
-        <page name="RC" gui-text="Referencia-Compuesto">
+        <page name="RC" gui-text="Reaccion-Compuesto">
             <param name="type_R" type="optiongroup" appearance="combo" gui-text="Tipo de elemento:">  ➎
                 <option value="Reactions">Reacción</option>
                 <option value="Component">Compuesto</option>
