@@ -8,7 +8,7 @@
             <param name="type_M" type="optiongroup" appearance="combo" gui-text="Tipo de elemento:">  ➎
                 <option value="Reactions">Reacción</option>
                 <option value="Elemental_Reactions">Reacción Elemental</option>
-                <option value="Metabolic_Building_Block">Bloque constructor metabólico</option>
+                <option value="Metabolic_Building_Block">MBB</option>
             </param>
             <param name="ID_M" type="string" gui-text="Código del elemento:">1</param>
             <param name="KEGG_reaction_M" type="string" gui-text="Código de la reacción en el KEGG:">R1234</param>
