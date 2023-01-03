@@ -1,12 +1,12 @@
 import inkex
 from operator import contains
-from shared.Arrow import add_arrow
-from shared.Boleans import is_path, is_metabolic_pathway_element
+from shared.Arrow import add_arrow_image
+from shared.Boleans import is_path, is_metabolic_pathway_element, is_image
 from shared.Errors import *
 
 def redraw_paths(self, paths) -> None:
     for path in paths:
-        add_arrow(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')), False)
+        add_arrow_image(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')))
         path.delete()
 
 class Constructor(inkex.EffectExtension):
@@ -21,7 +21,7 @@ class Constructor(inkex.EffectExtension):
             return
 
         # Obteins all the elements selected.
-        def check_element(element) -> bool: return is_metabolic_pathway_element(element.get_id()) 
+        def check_element(element) -> bool: return is_metabolic_pathway_element(element.get_id()) or is_image(element.tag_name)
         elements = list(filter(check_element, self.svg.selection))
 
         # If there is elements selected, it works as intended, if there is no 
@@ -52,6 +52,8 @@ class Constructor(inkex.EffectExtension):
             # Redraws paths.
             if(paths):
                 redraw_paths(self, paths)
+            else:
+                inkex.errormsg(error_move_path)
 
 
 if __name__ == '__main__':

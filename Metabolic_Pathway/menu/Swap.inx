@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension 
     xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>8. Adaptar Ruta Metabolica</name>
-    <id>format.svg</id>
+    <name>7. Cambiar Elemento por Imagen</name>
+    <id>swap.element</id>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
@@ -10,6 +10,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command location="inx" interpreter="python">../Format_SVG.py</command>
+        <command location="inx" interpreter="python">../Swap_Elements.py</command>
     </script>
 </inkscape-extension>

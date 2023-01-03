@@ -1,5 +1,5 @@
 import inkex
-from shared.Boleans import is_metabolic_pathway_element, is_path
+from shared.Boleans import is_metabolic_pathway_element, is_path, is_image
 from shared.Errors import *
 
 class Constructor(inkex.EffectExtension):
@@ -16,19 +16,20 @@ class Constructor(inkex.EffectExtension):
         # Obtains the selected elements id and deletes them from the graph.
         ids = []
         for element in self.svg.selection:
-            if (is_metabolic_pathway_element(element.get_id())):
+            if(is_metabolic_pathway_element(element.get_id()) or is_image(element.tag_name)):
                 ids.append(element.get_id())
             element.delete()
 
 
         # Searches for paths and if they connect with a deleted element, it is removed.
-        all_ids = self.svg.get_ids()
-        for g_id in all_ids:
-            if(is_path(g_id)):
-                path = self.svg.getElementById(g_id)
-                for id in ids:
-                    if(path.get('id_dest') == id or path.get('id_orig') == id):
-                        path.delete()
+        if(ids):
+            all_ids = self.svg.get_ids()
+            for g_id in all_ids:
+                if(is_path(g_id)):
+                    path = self.svg.getElementById(g_id)
+                    for id in ids:
+                        if(path.get('id_dest') == id or path.get('id_orig') == id):
+                            path.delete()
 
 if __name__ == '__main__':
     Constructor().run()

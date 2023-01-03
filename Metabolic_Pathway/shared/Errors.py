@@ -14,3 +14,4 @@ error_move_path = 'Para mover los caminos tiene que haber como minimo 1 elemento
 error_size_element = 'Para cambiar el tamaño tiene que haber como minimo un elemento metabolico seleccionado.'
 error_negative_size_1 = 'El tamaño del elemento '
 error_negative_size_2 = ' será negativo, no se le aplicará el cambio.'
+error_selection_size = 'Se tiene que seleccionar una imagen e un elemento de la ruta metabólica.'

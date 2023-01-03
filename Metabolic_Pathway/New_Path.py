@@ -1,6 +1,6 @@
 import inkex, re
-from shared.Boleans import is_metabolic_pathway_element
-from shared.Arrow import add_arrow
+from shared.Boleans import is_metabolic_pathway_element, is_image
+from shared.Arrow import add_arrow, add_arrow_image
 from shared.Errors import *
 
 class Constructor(inkex.EffectExtension):
@@ -19,7 +19,7 @@ class Constructor(inkex.EffectExtension):
         
         # Verifies that the two selected elements are from a metabolic pathway.
         for element in self.svg.selection:
-            if(not is_metabolic_pathway_element(element.get_id())):
+            if(not is_metabolic_pathway_element(element.get_id()) and not is_image(element.tag_name)):
                 inkex.errormsg(error_metabolic_element)
                 return
 
@@ -45,7 +45,10 @@ class Constructor(inkex.EffectExtension):
                 return
             
         # Draws an arrow between elements.
-        add_arrow(self, element_B, element_A, False)
+        if(is_image(element_A.tag_name) or is_image(element_B.tag_name)):
+            add_arrow_image(self, element_B, element_A)
+        else:
+            add_arrow(self, element_B, element_A)
 
 if __name__ == '__main__':
     Constructor().run()

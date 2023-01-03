@@ -21,6 +21,9 @@ def is_metabolic_pathway_element(ID: str) -> bool:
     pattern = re.compile("[E|I|M|C|R] [0-9]+")
     return pattern.match(ID)
 
+def is_image(tag: str) -> bool:
+    return tag == 'image'
+
 # Checks if the reaction have the correct format.
 def check_format_reaction(reaction: str) -> bool:
     pattern = re.compile("^R[0-9][0-9][0-9][0-9][0-9](_rev)?$")
