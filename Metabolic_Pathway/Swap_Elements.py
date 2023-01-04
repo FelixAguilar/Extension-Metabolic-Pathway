@@ -1,8 +1,13 @@
 import inkex
-from operator import contains
 from shared.Arrow import add_arrow_image
 from shared.Boleans import is_path, is_metabolic_pathway_element, is_image
 from shared.Errors import *
+
+def check_path(check_path, list_path):
+    for path in list_path:
+        if(path.get('id_dest') == check_path.get('id_dest') or path.get('id_orig') == check_path.get('id_orig')):
+            return True
+    return False
 
 class Constructor(inkex.EffectExtension):
     
@@ -28,19 +33,25 @@ class Constructor(inkex.EffectExtension):
             paths = list(filter(is_path, self.svg.get_ids()))
 
             element_id = element.get_id()
+            image_id = image.get_id()
             swap_paths = []
+            img_paths = []
             for path_id in paths:
                 path = self.svg.getElementById(path_id)
                 if(path.get('id_dest') == element_id or path.get('id_orig') == element_id):
                     swap_paths.append(path)
+                elif(path.get('id_dest') == image_id or path.get('id_orig') == image_id):
+                    img_paths.append(path)
 
             # Redraws paths.
             if(swap_paths):
                 for path in swap_paths:
-                    if (path.get('id_orig') == element_id):
-                        add_arrow_image(self, image, self.svg.getElementById(path.get('id_dest')))
-                    elif (path.get('id_dest') == element_id):
-                        add_arrow_image(self, self.svg.getElementById(path.get('id_orig')), image)
+                    if(not (path.get('id_orig') == image.get_id() or path.get('id_dest') == image.get_id())):
+                        if(not check_path(path, img_paths)):
+                            if(path.get('id_orig') == element_id):
+                                add_arrow_image(self, image, self.svg.getElementById(path.get('id_dest')))
+                            elif(path.get('id_dest') == element_id):
+                                add_arrow_image(self, self.svg.getElementById(path.get('id_orig')), image)
                     path.delete()
             element.delete()
         else:
