@@ -19,9 +19,9 @@ Esta extensión permite al usuario adaptar una ruta metabólica que no utilice e
 
 Para ello la ruta metabólica ha de cumplir tres cosas:
 
-    Ha de ser formada por grupos, cada grupo ha de contener todos los componentes que forman parte de un elemento de la ruta metabólica.
+    Ha de estar en formato Metabolic-DAG o Reaction-Compound.
 
-    Ha de contener todo dentro de un grupo con la etiqueta que como minimo comenzará con la palabra "graph".
+    Ha de ser formada por grupos, cada grupo ha de contener todos los componentes que forman parte de un elemento de la ruta metabólica.
 
     A la hora de utilizar esta extensión no ha de haber nada seleccionado por el usuario.
             </label>
@@ -30,42 +30,41 @@ Para ello la ruta metabólica ha de cumplir tres cosas:
             <label xml:space="preserve">
 Esta extensión permite al usuario la creación de un elemento segun los diferentes parametros que introduzca. 
 
-Para ello, el usuario elige para que tipo de ruta va a crear el elemento, Metablolic-DAG o Reaction-Compound. Una vez elegida toca
+Para ello, el usuario elige para que tipo de ruta va a crear el elemento, Metabolic-DAG o Reaction-Compound. Una vez elegida toca
 seleccionar el tipo de elemento que se quiere añadir, el conjunto de estos disponibles depende del tipo de ruta seleccionado.
 
 Una vez decidido, hay que rellenar los diferentes campos de texto con la informacion dependiendo del tipo de elemento, la posicion en x e y
 del elemento junto con el tamaño de este es compartido por los diferentes elementos y se utilizarán siempre. Sin embargo los demas campos
 no siempre se utilizarán:
 
-    Tanto Reaccion, Reaccion Elemental como Reaccion Inversa siempre utilizarán los campos de Codigo del elemento, Código de la reacción en
-    el KEGG y Código de la enzima en el KEGG.
+    Tanto reacción, reacción elemental como reacción inversa siempre utilizarán los campos de código del elemento, código de la reacción en
+    el KEGG y código de la enzima en el KEGG.
 
-    El Bloque Constructor Metabólico solo utilizará el Código del Elemento, indicando asi el número de la ruta metabólica a la que hace
-    referencia.
+    El MBB solo utilizará el código del elemento, indicando así el número del conjunto conexo a la que hace referencia.
 
-    El Compuesto solo utilizará el Código del Elemento, el cual indicará el código o nombre de este.
+    El compuesto solo utilizará el Código del Elemento, el cual indicará el código en el KEGG o nombre de este.
 
-Ademas de la información se puede indicar si se quiere que el elemento sea único, por ello si se activa esta opción, verificará si hay
-algun elemento en el SVG con el codigo del elemento introduccido, este no funncionará con un Compuesto.
-
-Si se utiliza el "Live Preview" o se aplica, se generará el elemento con las propiedades indicadas.
+Además se puede indicar si el elemento tendrá un código único en la ruta metabólica, por esto, si se activa esta opción, verificará si hay
+algun elemento dentro del SVG con ese mismo código introduccido, si existe, devuelve un mensaje de error. Esta opción no funncionará con un
+compuesto.
             </label>
         </page>
         <page name='new_path' gui-text='Nuevo Camino'>
             <label xml:space="preserve">
-Esta extensión permite al usuario añadir un camino entre dos elementos de la Ruta Metabolica.
+Esta extensión permite al usuario añadir un camino entre dos elementos o imágenes de la Ruta Metabólica.
 
-Para ello antes de ejecutarla hay que seleccionar dos elementos con el cursor que no tengan ya un camino entre ellos en esa dirección. Una
-vez decidido este se ejecuta y permitirá indicar si se quiere alterar la dirección de este camino, una vez decidido, este creará un camino
-entre ambos elementos.
+Para ello antes de ejecutarla hay que seleccionar dos elementos o imagenes con el cursor, estos no han de tener un camino entre ellos en 
+esa dirección. Una vez decidido, este se ejecuta y en el menú permitirá alterar la dirección de este camino si se desea, entonces este 
+creará un camino entre ambos elementos o imagenes.
             </label>
         </page>
         <page name='change_size' gui-text='Cambiar Tamaño'>
             <label xml:space="preserve">
 Esta extensión permite que el usuario cambie el tamaño de un conjunto de elementos.
 
-Para ello antes de ejecutarla, el usuario ha de seleccionar un conjunto de elementos los cuales quiere cambiar de tamaño, a continuación se
-indicará la diferencia de tamaño a aplicar, de forma que este puede ser negativo para disminuir el tamaño o positivo para augmentarlo.
+Para ello antes de ejecutarla, el usuario ha de seleccionar un conjunto de elementos que los quiera cambiar de tamaño, a continuación se
+indicará la diferencia de tamaño a aplicar dentro del menú, de forma que este puede ser negativo para disminuir el tamaño o positivo para 
+aumentarlo.
 
 Además de cambiar de tamaño esta extension actualiza los caminos para que conecten con el elemento con diferente tamaño.
             </label>
@@ -82,10 +81,18 @@ Si no hay elementos seleccionados y solo hay caminos seleccionados estos serán 
         </page>
         <page name='delete_element' gui-text='Eliminar Elemento'>
             <label xml:space="preserve">
-Esta extensión permite eliminar elementos o caminos seleccionados.
+Esta extensión permite eliminar los componentes del SVG seleccionados por el usuario.
 
-A la hora de eliminar elementos, también eliminará los caminos que conectan este con elementos que no se vayan a borrar.
+A la hora de eliminar elementos o imagenes, también eliminará los caminos que conectan este con otros elementos.
             </label>
+    <page name='swap_image' gui-text='Intercambiar Elemento por Imagen'>
+            <label xml:space="preserve">
+Esta extensión permite al usuario intercambiar una imagen ya dentro del SVG por un elemento de la ruta metabólica, haciendo que todos los
+caminos que conectaban con el elemento ahora conecten con la imagen.
+
+Si la imagen tenia elementos conectados, estos se mantendrán.
+            </label>
+        </page>
         </page>
     </param>
     <effect>
