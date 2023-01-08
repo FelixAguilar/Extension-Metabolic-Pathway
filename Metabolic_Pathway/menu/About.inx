@@ -85,14 +85,14 @@ Esta extensión permite eliminar los componentes del SVG seleccionados por el us
 
 A la hora de eliminar elementos o imagenes, también eliminará los caminos que conectan este con otros elementos.
             </label>
-    <page name='swap_image' gui-text='Intercambiar Elemento por Imagen'>
+        </page>
+        <page name='swap_image' gui-text='Intercambiar Elemento por Imagen'>
             <label xml:space="preserve">
 Esta extensión permite al usuario intercambiar una imagen ya dentro del SVG por un elemento de la ruta metabólica, haciendo que todos los
 caminos que conectaban con el elemento ahora conecten con la imagen.
 
 Si la imagen tenia elementos conectados, estos se mantendrán.
             </label>
-        </page>
         </page>
     </param>
     <effect>
