@@ -99,7 +99,7 @@ class Constructor(inkex.EffectExtension):
                 inter_path.append(path)
 
         for path in inter_path:
-            add_arrow(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')), False)
+            add_arrow(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')))
             path.delete()
 
 if __name__ == '__main__':

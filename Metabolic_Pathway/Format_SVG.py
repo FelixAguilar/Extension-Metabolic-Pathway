@@ -367,7 +367,7 @@ class Constructor(inkex.EffectExtension):
             
             # If neither of them is empty then draw the arrow.
             if(nearest_dest != "" and nearest_orig != ""):
-                add_arrow(self, nearest_dest, nearest_orig, False)
+                add_arrow(self, nearest_dest, nearest_orig)
 
         # Deletes old graph.
         graph.delete()
