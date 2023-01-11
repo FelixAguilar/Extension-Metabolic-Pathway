@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension 
     xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>7. Cambiar Elemento por Imagen</name>
+    <name>7.  Intercambiar elemento por imagen</name>
     <id>swap.element</id>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu name="Rutas Metabolicas"/>
+            <submenu name="Ruta Metabólica"/>
         </effects-menu>
     </effect>
     <script>

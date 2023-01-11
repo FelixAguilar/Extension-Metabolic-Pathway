@@ -4,29 +4,29 @@
     <name>2. Nuevo elemento</name>
     <id>new.element</id>
     <param name="tab" type="notebook">
-        <page name="DAG" gui-text="DAG Metabolico">
+        <page name="DAG" gui-text="DAG Metabólico">
             <param name="type_M" type="optiongroup" appearance="combo" gui-text="Tipo de elemento:">  ➎
                 <option value="Reactions">Reacción</option>
-                <option value="Elemental_Reactions">Reacción Elemental</option>
+                <option value="Elemental_Reactions">Reacción elemental</option>
                 <option value="Metabolic_Building_Block">MBB</option>
             </param>
             <param name="ID_M" type="string" gui-text="Código del elemento:">1</param>
-            <param name="KEGG_reaction_M" type="string" gui-text="Código de la reacción en el KEGG:">R1234</param>
-            <param name="KEGG_enzime_M" type="string" gui-text="Código de la enzima en el KEGG:">1.1.1.1</param>
+            <param name="KEGG_reaction_M" type="string" gui-text="Código de la reacción dentro del KEGG:">R1234</param>
+            <param name="KEGG_enzime_M" type="string" gui-text="Código de la enzima dentro del KEGG:">1.1.1.1</param>
             <param name="x_M" type="int"  min="0" max="10000" gui-text="Posición del elemento en el eje X:">10</param>
             <param name="y_M" type="int"  min="0" max="10000" gui-text="Posición del elemento en el eje Y:">10</param>
             <param name="size_M" type="int" min="0" max="180" gui-text="Tamaño del elemento:">30</param>
             <param name="unique_M" type="bool" gui-text="El código del elemento ha de ser único.">false</param>
         </page>
-        <page name="RC" gui-text="Reaccion-Compuesto">
+        <page name="RC" gui-text="Reacción-Compuesto">
             <param name="type_R" type="optiongroup" appearance="combo" gui-text="Tipo de elemento:">  ➎
                 <option value="Reactions">Reacción</option>
                 <option value="Component">Compuesto</option>
                 <option value="Inverse_Reaction">Reacción inversa</option>
             </param>
             <param name="ID_R" type="string" gui-text="Código del elemento:">1</param>
-            <param name="KEGG_reaction_R" type="string" gui-text="Código de la reacción en el KEGG:">R1234</param>
-            <param name="KEGG_enzime_R" type="string" gui-text="Código de la enzima en el KEGG:">1.1.1.1</param>
+            <param name="KEGG_reaction_R" type="string" gui-text="Código de la reacción dentro del KEGG:">R1234</param>
+            <param name="KEGG_enzime_R" type="string" gui-text="Código de la enzima dentro del KEGG:">1.1.1.1</param>
             <param name="x_R" type="int"  min="0" max="10000" gui-text="Posición del elemento en el eje X:">10</param>
             <param name="y_R" type="int"  min="0" max="10000" gui-text="Posición del elemento en el eje Y:">10</param>
             <param name="size_R" type="int" min="0" max="180" gui-text="Tamaño del elemento:">30</param>
@@ -37,7 +37,7 @@
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu name="Rutas Metabolicas"/>
+            <submenu name="Ruta Metabólica"/>
         </effects-menu>
     </effect>
     <script>

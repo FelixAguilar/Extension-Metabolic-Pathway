@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension 
     xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>4. Cambiar el tamaño de elemento</name>
+    <name>4. Cambiar tamaño de elementos</name>
     <id>change.size</id>
     <param name="size" type="int" min="-180" max="180" gui-text="Modificación del tamaño:">0</param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu name="Rutas Metabolicas"/>
+            <submenu name="Ruta Metabólica"/>
         </effects-menu>
     </effect>
     <script>

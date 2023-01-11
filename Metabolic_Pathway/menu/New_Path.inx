@@ -7,7 +7,7 @@
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu name="Rutas Metabolicas"/>
+            <submenu name="Ruta Metabólica"/>
         </effects-menu>
     </effect>
     <script>

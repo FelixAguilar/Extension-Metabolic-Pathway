@@ -98,7 +98,7 @@ Si la imagen tenia elementos conectados, estos se mantendrán.
     <effect>
         <object-type>path</object-type>
         <effects-menu>
-            <submenu name="Rutas Metabolicas"/>
+            <submenu name="Ruta Metabólica"/>
         </effects-menu>
     </effect>
     <script>
