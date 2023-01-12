@@ -98,7 +98,7 @@ class Constructor(inkex.EffectExtension):
         pattern5 = re.compile("^([0-9]+(\-[0-9]+)?(_r)?)$")                 # ID code pattern.
         pattern7 = re.compile("E *")                                        # Elemental reaction graph ID pattern.
 
-        graph: Any
+        graph = None
         lines: list[Path] = []              # List that will contain all the paths of the graph.
         groups_info: list[Group_info] = []  # List that will contain all the groups of the graph.
         transform: tuple[float, float] = [] # Tuple that will indicate which transformation must be applied to the elements of the graph.
@@ -370,7 +370,8 @@ class Constructor(inkex.EffectExtension):
                 add_arrow(self, nearest_dest, nearest_orig)
 
         # Deletes old graph.
-        graph.delete()
+        if(graph != None):
+            graph.delete()
 
 if __name__ == '__main__':
     Constructor().run()
