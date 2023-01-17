@@ -265,7 +265,7 @@ class Constructor(inkex.EffectExtension):
                                 size_x = abs(x_A - x_B)
                                 size_y = abs(y_A - y_C)
                                 size = size_x
-                                
+
                     # Proceeds to set the Group with the information obtained from the scraping.
                     if(type_element == 'MBB'):
                         groups_info.append(Group_info(add_metabolic_building_block(self, id_element, position[0], position[1], size), size_x, size_y))
@@ -329,7 +329,9 @@ class Constructor(inkex.EffectExtension):
             # Applies the transformation, changes the direction of the arrow and gets the angle of the line to the x-axis.
             line.apply_transformation(transform)
             line.change_direction()
-            angle = get_angle_line(line.get_d(), line.get_o())
+
+            # TESTING
+            inkex.errormsg('Camino')
 
             # Iterates trought all elements in groups for which the path interconects them.
             for group_info in groups_info:
@@ -348,20 +350,32 @@ class Constructor(inkex.EffectExtension):
                     distance_o = sqrt(pow(group_center[0] - line.o[0], 2) + pow(group_center[1] - line.o[1], 2))
                     distance_d = sqrt(pow(group_center[0] - line.d[0], 2) + pow(group_center[1] - line.d[1], 2))
 
+                    angle_o = get_angle_line(line.get_d(), group_center)
+                    angle_d = get_angle_line(line.get_o(), group_center)
+
                     # Gets the size of the element and the corrected distance to the line.
-                    size_o = get_size(group.get_id(), size_x, size_y, angle)
+                    size_o = get_size(group.get_id(), size_x, size_y, angle_o)
                     distance_o = distance_o - sqrt(pow(size_o[0], 2) + pow(size_o[1], 2))
-                    size_d = get_size(group.get_id(), size_x, size_y, angle)
+
+                    size_d = get_size(group.get_id(), size_x, size_y, angle_d)
                     distance_d = distance_d - sqrt(pow(size_d[0], 2) + pow(size_d[1], 2))
 
                     if(distance_d < distance_o):
                         # Checks if the distance to the destiny is smaller, if it is then updates it.
                         if(distance_dest > distance_d):
+
+                            # TESTING
+                            inkex.errormsg('Cambio destino: ' + group.get_id() + ' distancia ' + str(distance_d))
+
                             distance_dest = distance_d
                             nearest_dest = group
                     else:
                         # Checks if the distance to the origin is smaller, if it is then updates it.
                         if(distance_orig > distance_o):
+
+                            # TESTING
+                            inkex.errormsg('Cambio origen: ' + group.get_id() + ' distancia ' + str(distance_o))
+
                             distance_orig = distance_o
                             nearest_orig = group
             

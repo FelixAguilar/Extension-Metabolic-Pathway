@@ -1,6 +1,6 @@
 from typing import Any, Tuple
 from shared.Element import font_size
-from math import atan, atan2, sin, cos, pi, sqrt, pow
+from math import atan, atan2, sin, cos, pi, sqrt, pow, tan
 
 # Gets the distance from the center of the ellipse to the edge of it, this is indicated by the angle, the result is separated in x and y coordinates.
 def get_elipse_size(size_x: float, size_y: float, angle: float) -> Tuple[float, float]:
@@ -18,12 +18,17 @@ def get_rectangle_size(size_x: float, size_y: float, angle: float) -> Tuple[floa
     center_base = size_x / 2
     center_hight = size_y / 2
 
+    if (angle < 0):
+        angle = angle + 180
+    if (angle > 90):
+        angle = 180 - angle
+
     vertex_angle = atan(center_hight / center_base) * 180 / pi
 
-    if((angle > vertex_angle and angle < 180 - vertex_angle) or (angle < -vertex_angle and angle > vertex_angle - 180)):
-        return (abs(center_base * cos(angle * (pi / 180))), center_hight)
-    else:
-        return (center_base, abs(center_hight * sin(angle * (pi / 180))))
+    if(angle < vertex_angle):
+        return (center_base, tan(angle * (pi/180)) * center_base)
+    if(angle > vertex_angle):
+        return (tan((90 - angle) * (pi/180)) * center_hight, center_hight)
 
 # Gets the distance from the center of the compound rectangle to the edge of it, this is indicated by the angle, the result is separated in x and y coordinates. 
 def get_component_size(size: float, angle: float) -> Tuple[float, float]:
@@ -31,12 +36,17 @@ def get_component_size(size: float, angle: float) -> Tuple[float, float]:
     center_base = size / 2
     center_hight = (font_size + 2) / 2 
 
+    if (angle < 0):
+        angle = angle + 180
+    if (angle > 90):
+        angle = 180 - angle
+
     vertex_angle = atan(center_hight / center_base) * 180 / pi
 
-    if((angle > vertex_angle and angle < 180 - vertex_angle) or (angle < -vertex_angle and angle > vertex_angle - 180)):
-        return (abs(center_base * cos(angle * (pi / 180))), center_hight)
-    else:
-        return (center_base, abs(center_hight * sin(angle * (pi / 180))))
+    if(angle < vertex_angle):
+        return (center_base, tan(angle * (pi/180)) * center_base)
+    if(angle > vertex_angle):
+        return (tan((90 - angle) * (pi/180)) * center_hight, center_hight)
 
 # Gets the distance from the center of the octogon to the edge of it, this is indicated by the angle, the result is separated in x and y coordinates.
 def get_octogon_size(size_x: float, size_y: float, angle: float) -> Tuple[float, float]:
