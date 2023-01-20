@@ -1,11 +1,11 @@
 import inkex, re
 from typing import Any, List, Tuple
-from inkex import Transform
 from math import sqrt, pow
 from shared.Arrow import add_arrow
 from shared.Boleans import is_component, is_elemental_reaction, is_metabolic_pathway_element
 from shared.Geometry import get_rectangle_size, get_octogon_size, get_elipse_size, get_angle_line, get_transformation, get_distance
 from shared.Element import add_metabolic_building_block, add_elemental_reaction, add_reaction, add_inverse_reaction, add_component
+from shared.Errors import *
 
 # Obtains from the string the number in float format.
 def format_num(number: str) -> float:
@@ -26,13 +26,13 @@ def string_to_list(list: str) -> List[Tuple[float, float]]:
     return coordenates_list
 
 # Function that using the id decides which function to use to obtain the size in x and y axis.
-def get_size(ID: str, size_x: float, size_y: float, angle: float) -> Tuple[float, float]:
+def get_size(ID: str, value_x: Any, value_y: Any, angle: float) -> Tuple[float, float]:
     if(is_component(ID)):
-        return get_rectangle_size(size_x, size_y, angle)
+        return get_rectangle_size(value_x, value_y, angle)
     if(is_elemental_reaction(ID)):
-        return get_octogon_size(size_x, size_y, angle)
+        return get_octogon_size(value_x, value_y, angle)
     else:
-        return get_elipse_size(size_x, size_y, angle)
+        return get_elipse_size(value_x, value_y, angle)
 
 # Class used to define each path.
 class Path:
@@ -71,9 +71,9 @@ class Path:
 class Group_info:
 
     # Constructor.
-    def __init__(self, group, size_x: float, size_y: float) -> None:
-        self.size_x: float = size_x # Size in the x-axis of the original element.
-        self.size_y: float = size_y # Size in the y-axis of the original element.
+    def __init__(self, group, size_x, size_y) -> None:
+        self.size_x = size_x
+        self.size_y = size_y
         self.group = group          # Group to be drawn on the canvas.
 
     # Gets for the atributes.
@@ -96,7 +96,6 @@ class Constructor(inkex.EffectExtension):
         pattern3 = re.compile("R[0-9][0-9][0-9][0-9][0-9]")                 # Reaction code pattern.
         pattern4 = re.compile("[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+\.[0-9,\-]+") # Enzime code pattern.
         pattern5 = re.compile("^([0-9]+(\-[0-9]+)?(_r)?)$")                 # ID code pattern.
-        pattern7 = re.compile("E *")                                        # Elemental reaction graph ID pattern.
 
         graph = None
         lines: list[Path] = []              # List that will contain all the paths of the graph.
@@ -104,9 +103,16 @@ class Constructor(inkex.EffectExtension):
         transform: tuple[float, float] = [] # Tuple that will indicate which transformation must be applied to the elements of the graph.
 
         # Get list of all the ids of the graph in the current state.
+        processed = False
         ids: list[str] = []
         for id in self.svg.get_ids():
+            if(is_metabolic_pathway_element(id)):
+                processed = True
             ids.append(id)
+
+        if (processed):
+            inkex.errormsg(error_format)
+            return
 
         # Each element of the graph is filtered to generate the new format.
         for id in ids:
@@ -230,7 +236,14 @@ class Constructor(inkex.EffectExtension):
                             if(figure.get('fill') == 'yellow'):
                                 type_element = 'Elemental'
 
-                                # Gets the first to the fifth point of the octagon.
+                                # Vertex names for the octogon and extraction of used points
+                                #   D___C
+                                #  /     \
+                                # E       B
+                                # |       |
+                                # F       A
+                                #  \     /
+                                #   G___H
                                 x_A = float(points[0][0])
                                 y_A = float(points[0][1])
                                 x_B = float(points[1][0])
@@ -238,15 +251,16 @@ class Constructor(inkex.EffectExtension):
                                 x_C = float(points[2][0])
                                 y_C = float(points[2][1])
                                 x_D = float(points[3][0])
-                                y_D = float(points[3][1])
                                 x_E = float(points[4][0])
                                 y_E = float(points[4][1])
 
-                                # With this points calculates the center and size in x-axis and y-axis and gets the smallest size.
-                                position = ((x_A + x_E) / 2, (y_A + y_E) / 2)
-                                size_x = sqrt(pow(((x_D + x_C) / 2) - x_B, 2))
-                                size_y = sqrt(pow(((y_A + y_B) / 2) - y_C, 2))
-                                size = min(size_x, size_y)
+                                # With the points, values used for understanding the octogon are calculated.
+                                position = ((x_A + x_E) / 2, (y_A + y_E) / 2)  # Center (c)
+                                size_x = get_distance(position, (x_A, position[1])) # width (h2)
+                                size_y = get_distance(position, (position[0], y_C)) # hight (h1)
+                                radius_x = get_distance(position, (x_B, y_B))  # radius_hight (r2)
+                                radius_y = get_distance(position, (x_C, y_C))  # radius_width (r1)
+                                size = min(radius_x, radius_y)
 
                             # If it has less or equal points than 5 it is a compound.
                             elif(len(points) <= 5):
@@ -272,7 +286,7 @@ class Constructor(inkex.EffectExtension):
                     elif(type_element == 'Reaction'):
                         groups_info.append(Group_info(add_reaction(self, id_element, reactions, enzime,  position[0], position[1], size), size_x, size_y))
                     elif(type_element == 'Elemental'):
-                        groups_info.append(Group_info(add_elemental_reaction(self, id_element, reactions, enzime, position[0], position[1], size), size_x, size_y))
+                        groups_info.append(Group_info(add_elemental_reaction(self, id_element, reactions, enzime, position[0], position[1], size), (size_x, size_y), (radius_x, radius_y)))
                     elif(type_element == 'Inverse'):
                         groups_info.append(Group_info(add_inverse_reaction(self, id_element, reactions, enzime, position[0], position[1], size), size_x, size_y))
                     elif(type_element == 'Compound'):
@@ -330,9 +344,6 @@ class Constructor(inkex.EffectExtension):
             line.apply_transformation(transform)
             line.change_direction()
 
-            # TESTING
-            inkex.errormsg('Camino')
-
             # Iterates trought all elements in groups for which the path interconects them.
             for group_info in groups_info:
 
@@ -364,17 +375,11 @@ class Constructor(inkex.EffectExtension):
                         # Checks if the distance to the destiny is smaller, if it is then updates it.
                         if(distance_dest > distance_d):
 
-                            # TESTING
-                            inkex.errormsg('Cambio destino: ' + group.get_id() + ' distancia ' + str(distance_d))
-
                             distance_dest = distance_d
                             nearest_dest = group
                     else:
                         # Checks if the distance to the origin is smaller, if it is then updates it.
                         if(distance_orig > distance_o):
-
-                            # TESTING
-                            inkex.errormsg('Cambio origen: ' + group.get_id() + ' distancia ' + str(distance_o))
 
                             distance_orig = distance_o
                             nearest_orig = group

@@ -15,3 +15,4 @@ error_size_element = 'Para cambiar el tamaño tiene que haber como mínimo un el
 error_negative_size_1 = 'El tamaño del elemento '
 error_negative_size_2 = ' será negativo, no se le aplicará el cambio.'
 error_selection_size = 'Se tiene que seleccionar una imagen y un elemento dentro de la ruta metabólica.'
+error_format = 'Esta ruta metbólica ya utiliza el formato adecuado para el conjunto de extensiones.'

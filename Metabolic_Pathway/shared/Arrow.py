@@ -11,7 +11,7 @@ def get_size(ID: str, size: float, angle: float) -> Tuple[float, float]:
     if(is_component(ID)):
         return get_component_size(size, angle)
     if(is_elemental_reaction(ID)):
-        return get_regular_octogon_size(size, angle)
+        return get_regular_octogon_size(size + 4, angle)
     else:
         return get_circle_size(size, angle)
 
