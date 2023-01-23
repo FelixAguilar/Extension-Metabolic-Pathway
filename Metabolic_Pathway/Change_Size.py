@@ -2,7 +2,7 @@ import inkex
 from shared.Element import add_component, add_elemental_reaction, add_inverse_reaction, add_reaction, add_metabolic_building_block
 from shared.Boleans import is_metabolic_pathway_element, check_format_reaction, check_format_enzime, is_path
 from shared.Geometry import get_transformation
-from shared.Arrow import add_arrow
+from shared.Arrow import add_arrow_image
 from shared.Errors import *
 
 class Constructor(inkex.EffectExtension):
@@ -99,7 +99,7 @@ class Constructor(inkex.EffectExtension):
                 inter_path.append(path)
 
         for path in inter_path:
-            add_arrow(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')))
+            add_arrow_image(self, self.svg.getElementById(path.get('id_orig')), self.svg.getElementById(path.get('id_dest')))
             path.delete()
 
 if __name__ == '__main__':
