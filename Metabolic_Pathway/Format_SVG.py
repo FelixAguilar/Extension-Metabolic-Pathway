@@ -361,15 +361,17 @@ class Constructor(inkex.EffectExtension):
                     distance_o = sqrt(pow(group_center[0] - line.o[0], 2) + pow(group_center[1] - line.o[1], 2))
                     distance_d = sqrt(pow(group_center[0] - line.d[0], 2) + pow(group_center[1] - line.d[1], 2))
 
-                    angle_o = get_angle_line(line.get_d(), group_center)
-                    angle_d = get_angle_line(line.get_o(), group_center)
+                    angle_o = get_angle_line(line.get_o(), group_center)
+                    angle_d = get_angle_line(line.get_d(), group_center)
 
                     # Gets the size of the element and the corrected distance to the line.
                     size_o = get_size(group.get_id(), size_x, size_y, angle_o)
-                    distance_o = distance_o - sqrt(pow(size_o[0], 2) + pow(size_o[1], 2))
-
                     size_d = get_size(group.get_id(), size_x, size_y, angle_d)
-                    distance_d = distance_d - sqrt(pow(size_d[0], 2) + pow(size_d[1], 2))
+                    size_o_f = sqrt(pow(size_o[0], 2) + pow(size_o[1], 2))
+                    size_d_f = sqrt(pow(size_d[0], 2) + pow(size_d[1], 2))
+
+                    distance_o = distance_o - size_o_f
+                    distance_d = distance_d - size_d_f
 
                     if(distance_d < distance_o):
                         # Checks if the distance to the destiny is smaller, if it is then updates it.

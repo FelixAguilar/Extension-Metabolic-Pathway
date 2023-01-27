@@ -4,13 +4,24 @@ from math import atan, atan2, sin, cos, pi, sqrt, pow, tan, radians, degrees, ac
 
 # Gets the distance from the center of the circle to the edge of it, this is indicated by the angle, the result is separated in x and y coordinates.
 def get_circle_size(size: float, angle: float) -> Tuple[float, float]:
-    angle = radians(angle)
-    return (abs(size * cos(angle)), abs(size * sin(angle)))
 
+    if (angle < 0):
+        angle = angle + 180
+    if (angle > 90):
+        angle = 180 - angle
+    angle = radians(angle)
+    return (size * cos(angle), size * sin(angle))
+    
 # Gets the distance from the center of the ellipse to the edge of it, this is indicated by the angle, the result is separated in x and y coordinates.
 def get_elipse_size(size_x: float, size_y: float, angle: float) -> Tuple[float, float]:
+
+    if (angle < 0):
+        angle = angle + 180
+    if (angle > 90):
+        angle = 180 - angle
+
     angle_rad = radians(angle)
-    radius = (size_x * size_y) / (sqrt((pow(size_x, 2) * pow(sin(angle_rad), 2)) + (pow(size_y, 2) * pow(cos(angle_rad), 2))))
+    radius = 1 / sqrt(pow(cos(angle_rad)/size_x, 2) + pow(sin(angle_rad)/size_y, 2))
     return get_circle_size(radius, angle)
 
 # Gets the distance from the center of the rectangle to the edge of it, this is indicated by the angle, the result is separated in x and y coordinates.
