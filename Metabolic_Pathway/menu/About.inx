@@ -8,9 +8,9 @@
 El conjunto de extensiones diseñadas para trabajar con rutas metabólicas, ha sido creado por Félix Aguilar como parte del trabajo de fin de
 grado (TFG).
 
-Estas están pensadas para facilitar la modificación y creación de rutas metabólicas e incluir imágenes en estas por parte del usuario, 
-añadiendo diferentes funcionalidades. En las otras pestañas de este menú, se explica el funcionamiento de las diferentes extensiones 
-incluidas en este conjunto.
+Estas extensiones están pensadas para facilitar la modificación y creación de rutas metabólicas e incluir imágenes en las mismas por parte
+del usuario, añadiendo diferentes funcionalidades. En las demás pestañas de este menú, se explica el funcionamiento de las diferentes 
+extensiones incluidas en este conjunto.
 
 Git Hub: https://github.com/FelixAguilar/Extension-Metabolic-Pathway
             </label>
@@ -19,59 +19,61 @@ Git Hub: https://github.com/FelixAguilar/Extension-Metabolic-Pathway
             <label xml:space="preserve">
 Esta extensión permite al usuario crear un elemento para la ruta metabólica según los diferentes parámetros que se introduzcan. 
 
-Para ello, el usuario elige para que tipo de ruta va a crear el elemento, DAG Metabólico o Reacción-Compuesto mediante la selección de la 
-pestaña. Entonces dentro de esta se selecciona que tipo de elemento se quiere añadir, los tipos disponibles variarán según el tipo de ruta.
+Para ello, el usuario elige para que tipo de ruta va a crear el elemento, DAG Metabólico o Reacción-Compuesto mediante la selección de la
+pestaña. A continuación se selecciona que clase de elemento se quiere añadir, las clases disponibles variarán según el tipo de ruta.
 
-Una vez decidido, los diferentes campos de texto se rellenarán con la información necesaria para generar el elemento deseado. Los campos a 
-utilizar variarán según el elemento:
+Una vez definida la clase, los diferentes campos de texto se rellenarán con la información necesaria para generar el elemento deseado. Los
+campos a utilizar variarán según el elemento:
 
     La reacción, reacción elemental y reacción inversa utilizarán los campos de código del elemento, código de la reacción dentro del KEGG
     y código de la enzima dentro del KEGG.
 
-    El MBB solo utilizará el código del elemento, indicando así el número identificativo del conjunto conexo al que hace referencia.
+    El MBB solo utilizará el campo código del elemento, indicando así el número identificativo del conjunto al que hace referencia.
 
-    El compuesto solo utilizará el código del elemento, el cual indicará el código dentro del KEGG o el nombre de este.
+    El compuesto solo utilizará el campo código del elemento, el cual indicará el código dentro del KEGG o el nombre de éste.
 
-Si alguno de los campos no está rellenado o bien el formato no es adecuado, mostrará un mensaje de error, en el cual indicará que sucedió.
+Si alguno de los campos no está rellenado o bien el formato no es adecuado, aparecerá un mensaje de error que indicará que sucede.
 
-Además se puede indicar si el elemento ha de tener un código único, si es así, comprobará si hay algún elemento utilizando este código, si
-ya existe un elemento con ese código, mostrará un mensaje de error. Si no, generará el elemento. Hay que tener en cuenta que si esta opción
-se deshabilita, se puede generar un elemento con el mismo código que uno con esta opción activada.
+Además se puede indicar si el elemento ha de tener un código único. Si es así, se comprobará si hay algún elemento utilizando este código,
+y en tal caso se generará un mensaje de error. Hay que tener en cuenta que si esta opción se deshabilita, se puede generar un elemento con
+el código repetido.
             </label>
         </page>
         <page name='new_path' gui-text='Nuevo camino'>
             <label xml:space="preserve">
 Esta extensión permite al usuario crear un camino entre dos elementos o imágenes dentro de la Ruta Metabólica. 
 
-Para ello, se selecciona los dos elementos o imágenes que se quieren conectar, el orden de selección indica la dirección resultante, siendo
-desde el primer elemento seleccionado al segundo. La dirección puede ser invertida mediante la opción en el menú antes de su ejecución.
+Para ello, se selecciona los dos elementos o imágenes que se quieren conectar, el sentido del camíno va del primer elemento seleccionado al
+segundo. El sentido puede ser invertido mediante la opción en el menú antes de su ejecución.
 
-Si no se han seleccionado exactamente dos elementos o imágenes se mostrará un mensaje de error, también se mostrará si ya existe un camino
-en la misma dirección en la cual se quiere generar el camino.
+Si no se han seleccionado exactamente los dos elementos o imágenes se mostrará un mensaje de error, también se mostrará si ya existe un 
+camino en la mismo sentido.
             </label>
         </page>
         <page name='change_size' gui-text='Cambiar tamaño de elementos'>
             <label xml:space="preserve">
 Esta extensión permite al usuario cambiar el tamaño de un conjunto de elementos.
 
-Para ello, antes de ejecutarla, el usuario selecciona un elemento o conjunto de elementos que desea modificar de tamaño, a continuación se
-indicará la diferencia de tamaño a aplicar dentro del menú, de forma que este puede ser negativo para disminuir el tamaño o positivo para 
-aumentarlo.
+Para ello, antes de ejecutarla, el usuario selecciona un elemento o conjunto de elementos que desea modificar de tamaño, a continuación
+indicará la diferencia de tamaño a aplicar dentro del menú. Si el valor es negativo disminuirá el tamaño y si es positivo aumentará.
 
-Una vez modificado la extensión también modificará los caminos que conecten con los elementos a los que se les ha cambiado el tamaño para
-que se adapten al nuevo tamaño.
+Una vez modificada el tamaño, la extensión también modificará los caminos para que se adapten al nuevo tamaño para que se adapten al nuevo
+tamaño de los elementos.
+
+Si al modificar el tamaño de un elemento sale un valor negativo, se mostrará un mensaje de error, indicando el elemento afectado del 
+conjunto. Los demas elementos de este conjunto serán modifcados.
             </label>
         </page>
         <page name='move_paths' gui-text='Actualizar caminos'>
             <label xml:space="preserve">
-Esta extensión permite actualizar los caminos que conecten con alguno de los elementos seleccionados. 
+Esta extensión permite actualizar los caminos que conectan con alguno de los elementos seleccionados. 
 
-Para ello se selecciona el conjunto de elementos que se quieren actualizar, en esta selección se pueden incluir caminos, a continuación se 
-realiza el movimiento de estos arrastrándolos y al ejecutar la extensión, los diferentes caminos se adaptarán a la posición nueva de los 
+Para ello se selecciona el conjunto de elementos que se quieren actualizar, en esta selección se pueden incluir caminos, a continuación se
+realiza el movimiento de estos arrastrándolos y al ejecutar la extensión, los diferentes caminos se adaptarán a la posición nueva de los
 elementos.
 
-Si solo hay caminos seleccionados, estos serán redibujados conectando con los elementos que les corresponden. Si no hay nada seleccionado esta
-no realizará ninguna acción.
+Si solo hay caminos seleccionados, estos serán redibujados conectando con los elementos que les corresponden. Si no hay nada seleccionado 
+esta no realizará ninguna acción.
             </label>
         </page>
         <page name='delete_element' gui-text='Eliminar componentes'>
@@ -82,18 +84,18 @@ eliminará los caminos que conectan este con otros elementos.
         </page>
         <page name='swap_image' gui-text='Intercambiar elemento por imagen'>
             <label xml:space="preserve">
-Esta extensión permite intercambiar una imagen ya incluida dentro del SVG por un elemento de la ruta metabólica, haciendo que todos los
-caminos que conectaban con el elemento ahora conecten con la imagen. Si la imagen tenía caminos que conectan con esta, se mantendrán una
+Esta extensión permite intercambiar un elemento de la ruta metabólica  por una imagen ya incluida dentro del SVG, haciendo que todos los
+caminos que conectaban con el elemento ahora conecten con la imagen. Si la imagen tenía caminos que conectaban con ella, se mantendrán una
 vez realizada la sustitución.
 
-Si no hay seleccionado exactamente una imagen y un elemento se producirá un error y se mostrará su respectivo mensaje.
+Si no hay seleccionados exactamente una imagen y un elemento se producirá un error y se mostrará su respectivo mensaje.
 
 Para incluir la imagen dentro del SVG se arrastra el archivo de la imagen dentro del lienzo y se incrusta la imagen.
             </label>
         </page>
         <page name='format' gui-text='Adaptar ruta metabólica'>
             <label xml:space="preserve">
-Esta extensión permite al usuario adaptar una ruta metabólica que no utilice el formato para el uso de las extensiones.
+Esta extensión permite al usuario adaptar una ruta metabólica que no utilice el formato adecuado para el uso de las extensiones.
 
 Para ello la ruta metabólica ha de cumplir tres cosas:
 
