@@ -3,7 +3,7 @@ from typing import Any, List, Tuple
 from math import sqrt, pow
 from shared.Arrow import add_arrow
 from shared.Boleans import is_component, is_elemental_reaction, is_metabolic_pathway_element
-from shared.Geometry import get_rectangle_size, get_octogon_size, get_elipse_size, get_angle_line, get_transformation, get_distance
+from shared.Geometry import get_rectangle_size, get_octogon_size, get_elipse_size, get_angle_line, get_transformation, get_distance, get_equivalent_angle
 from shared.Element import add_metabolic_building_block, add_elemental_reaction, add_reaction, add_inverse_reaction, add_component
 from shared.Errors import *
 
@@ -83,6 +83,36 @@ class Group_info:
         return self.size_y
     def get_group(self) -> Any:
         return self.group
+
+    def set_group(self, group) -> None:
+        self.group = group
+
+class Element:
+
+    #Constructor
+    def __init__(self: Any, type: str, position: Tuple[float,float], size: float, id_element: str = None, reactions: List[str] = None, enzime: str = None, name: str = None) -> None:
+        self.type = type
+        self.id_element = id_element
+        self.name = name
+        self.reactions = reactions
+        self.enzime = enzime
+        self.position = position
+        self.size = size
+
+    def apply_transform(self, transform: Tuple[float, float]) -> None:
+        self.position = (self.position[0] + transform[0], self.position[1] + transform[1])
+
+    def generate(self: Any, api: Any) -> Any:
+        if(self.type == 'MBB'):
+            return add_metabolic_building_block(api, self.id_element, self.position[0], self.position[1], self.size)
+        elif(self.type == 'Reaction'):
+            return add_reaction(api, self.id_element, self.reactions, self.enzime, self.position[0], self.position[1], self.size)
+        elif(self.type == 'Elemental'):
+            return add_elemental_reaction(api, self.id_element, self.reactions, self.enzime, self.position[0], self.position[1], self.size)
+        elif(self.type == 'Inverse'):
+            return add_inverse_reaction(api, self.id_element, self.reactions, self.enzime, self.position[0], self.position[1], self.size)
+        elif(self.type == 'Compound'):
+            return add_component(api, self.name, self.position[0], self.position[1], self.size)
 
 class Constructor(inkex.EffectExtension):
 
@@ -282,15 +312,15 @@ class Constructor(inkex.EffectExtension):
 
                     # Proceeds to set the Group with the information obtained from the scraping.
                     if(type_element == 'MBB'):
-                        groups_info.append(Group_info(add_metabolic_building_block(self, id_element, position[0], position[1], size), size_x, size_y))
+                        groups_info.append(Group_info(Element(type_element, position, size, id_element), size_x, size_y))
                     elif(type_element == 'Reaction'):
-                        groups_info.append(Group_info(add_reaction(self, id_element, reactions, enzime,  position[0], position[1], size), size_x, size_y))
+                        groups_info.append(Group_info(Element(type_element, position, size, id_element, reactions, enzime), size_x, size_y))
                     elif(type_element == 'Elemental'):
-                        groups_info.append(Group_info(add_elemental_reaction(self, id_element, reactions, enzime, position[0], position[1], size), (size_x, size_y), (radius_x, radius_y)))
+                        groups_info.append(Group_info(Element(type_element, position, size, id_element, reactions, enzime), (size_x, size_y), (radius_x, radius_y)))
                     elif(type_element == 'Inverse'):
-                        groups_info.append(Group_info(add_inverse_reaction(self, id_element, reactions, enzime, position[0], position[1], size), size_x, size_y))
+                        groups_info.append(Group_info(Element(type_element, position, size, id_element, reactions, enzime), size_x, size_y))
                     elif(type_element == 'Compound'):
-                        groups_info.append(Group_info(add_component(self, name, position[0], position[1], size), size_x, size_y))
+                        groups_info.append(Group_info(Element(type_element, position, size, name = name), size_x, size_y))
 
         # Once it has been defined all paths and groups is time to generate the new elements.
 
@@ -298,38 +328,12 @@ class Constructor(inkex.EffectExtension):
         layer = self.svg.get_current_layer()
         for group_info in groups_info:
             group = group_info.get_group()
-
-            # Iterates trough the childs in the group and changes the center coordinates with the transformation.
-            for child in group.descendants():
-                if(child.tag_name == 'path'):
-                    d = child.get('d')[2:]
-                    new_d = 'M '
-                    while(d):
-                        pos = d.find(' L ')
-                        if (pos != -1):
-                            point = d[0:pos]
-                            d = d[pos + 3:]
-                        else:
-                            point = d[0:-2]
-                            d = ''
-                        point = point.split(",")
-                        point = (str(float(point[0]) + transform[0]), str(float(point[1]) + transform[1]))
-                        point = point[0] + ',' +  point [1]
-                        if(d):
-                            new_d += point + ' L '
-                        else:
-                            new_d += point + ' z'
-                    child.set('d', new_d)
-                elif(child.tag_name == 'circle'):
-                    child.set('cx', float(child.get('cx')) + transform[0])
-                    child.set('cy', float(child.get('cy')) + transform[1])
-                else:
-                    # For text and rectangles and circles.
-                    child.set('x', float(child.get('x')) + transform[0])
-                    child.set('y', float(child.get('y')) + transform[1])
+            group.apply_transform(transform)
+            group_created = group.generate(self)
+            group_info.set_group(group_created)
 
             # Adds the group to the layer.
-            layer.add(group)
+            layer.add(group_created)
 
         # Here it will draw all path between the elements.
         for line in lines:
@@ -361,17 +365,15 @@ class Constructor(inkex.EffectExtension):
                     distance_o = sqrt(pow(group_center[0] - line.o[0], 2) + pow(group_center[1] - line.o[1], 2))
                     distance_d = sqrt(pow(group_center[0] - line.d[0], 2) + pow(group_center[1] - line.d[1], 2))
 
-                    angle_o = get_angle_line(line.get_o(), group_center)
-                    angle_d = get_angle_line(line.get_d(), group_center)
+                    angle_o = get_equivalent_angle(get_angle_line(line.get_o(), group_center))
+                    angle_d = get_equivalent_angle(get_angle_line(line.get_d(), group_center))
 
                     # Gets the size of the element and the corrected distance to the line.
                     size_o = get_size(group.get_id(), size_x, size_y, angle_o)
                     size_d = get_size(group.get_id(), size_x, size_y, angle_d)
-                    size_o_f = sqrt(pow(size_o[0], 2) + pow(size_o[1], 2))
-                    size_d_f = sqrt(pow(size_d[0], 2) + pow(size_d[1], 2))
 
-                    distance_o = distance_o - size_o_f
-                    distance_d = distance_d - size_d_f
+                    distance_o = distance_o - size_o
+                    distance_d = distance_d - size_d
 
                     if(distance_d < distance_o):
                         # Checks if the distance to the destiny is smaller, if it is then updates it.

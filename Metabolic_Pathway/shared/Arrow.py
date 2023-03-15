@@ -2,39 +2,40 @@ import inkex
 from typing import Any, Tuple
 from inkex import BaseElement
 from math import sin, cos, pi
-from shared.Geometry import get_transformation, get_angle_line, get_circle_size, get_regular_octogon_size, get_component_size, get_rectangle_size
+from shared.Geometry import get_transformation, get_angle_line, get_separate_size, get_regular_octogon_size, get_component_size, get_rectangle_size, get_equivalent_angle
 from shared.Boleans import is_component, is_elemental_reaction, is_image
 from shared.Element import add_triangle, add_line
 
 # Function that using the id decides which function to use to obtain the size in x and y axis.
 def get_size(ID: str, size: float, angle: float) -> Tuple[float, float]:
+    temp = size
+    angle = get_equivalent_angle(angle)
     if(is_component(ID)):
-        return get_component_size(size, angle)
+        temp = get_component_size(size, angle)
     if(is_elemental_reaction(ID)):
-        return get_regular_octogon_size(size + 4, angle)
-    else:
-        return get_circle_size(size, angle)
+        temp = get_regular_octogon_size(size + 4, angle)
+    return get_separate_size(temp, angle)
 
 # Function that returns the coordenates from point A and B 
 def get_line_coordinates(center_A: Tuple[float, float], size_A: Tuple[float, float], center_B: Tuple[float, float], size_B: Tuple[float, float]) -> Tuple[Tuple[float, float], Tuple[float, float]]:
 
-        # For x-axis.
-        if(center_A[0] > center_B[0]):
-            x_A = center_A[0] - size_A[0]
-            x_B = center_B[0] + size_B[0]
-        else:
-            x_A = center_A[0] + size_A[0]
-            x_B = center_B[0] - size_B[0]
+    # For x-axis.
+    if(center_A[0] > center_B[0]):
+        x_A = center_A[0] - size_A[0]
+        x_B = center_B[0] + size_B[0]
+    else:
+        x_A = center_A[0] + size_A[0]
+        x_B = center_B[0] - size_B[0]
 
-        # For y-axis.
-        if(center_A[1] > center_B[1]):
-            y_A = center_A[1] - size_A[1]
-            y_B = center_B[1] + size_B[1]
-        else:
-            y_A = center_A[1] + size_A[1]
-            y_B = center_B[1] - size_B[1]
+    # For y-axis.
+    if(center_A[1] > center_B[1]):
+        y_A = center_A[1] - size_A[1]
+        y_B = center_B[1] + size_B[1]
+    else:
+        y_A = center_A[1] + size_A[1]
+        y_B = center_B[1] - size_B[1]
 
-        return ((x_A, y_A), (x_B, y_B))
+    return ((x_A, y_A), (x_B, y_B))
 
 def add_straight_arrow(self, origin_id, destiantion_id, origin, destination):
 
@@ -43,13 +44,13 @@ def add_straight_arrow(self, origin_id, destiantion_id, origin, destination):
 
     # Triangle height (sides are 1) and splited into x and y.
     height = 3
-    x_height = height * cos(angle * (pi / 180))
-    y_height = height * sin(angle * (pi / 180))
+    x_height = height * cos(angle)
+    y_height = height * sin(angle)
     
     # Creates the group and adds the elements depending on the direction.
     group = inkex.Group()
     group.add(add_line(origin, destination))
-    group.add(add_triangle((origin[0] + x_height, origin[1] + y_height), angle + 180))
+    group.add(add_triangle((origin[0] + x_height, origin[1] + y_height), angle + pi))
     group.set('id_orig', destiantion_id)
     group.set('id_dest', origin_id)
         
@@ -118,12 +119,12 @@ def add_arrow_image(self: Any, element_A: Any, element_B: Any) -> None:
 
     # Gets the size to add or remove from the elements according to the type of it.
     if(is_image(element_A.tag_name)):
-        size_A = get_rectangle_size(size_A[0],size_A[1],angle)
+        size_A = get_separate_size(get_rectangle_size(size_A[0],size_A[1],angle), angle)
     else:
         size_A = get_size(id_A, size_A, angle)
 
     if(is_image(element_B.tag_name)):
-        size_B = get_rectangle_size(size_B[0],size_B[1],angle)
+        size_B = get_separate_size(get_rectangle_size(size_B[0],size_B[1],angle), angle)
     else:
         size_B = get_size(id_B, size_B, angle)
 

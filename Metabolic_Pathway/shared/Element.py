@@ -1,7 +1,7 @@
 import inkex
 from typing import Any, Tuple, List
 from inkex import TextElement, PathElement, Rectangle, BaseElement, Circle
-from math import cos, sin, pi
+from math import cos, sin, pi, degrees
 
 # Font size for all text created by the extension.
 font_size: float = 10
@@ -37,7 +37,7 @@ def add_triangle(center: Tuple[float, float], rotation: float) -> Any:
              ' L ' + str(center[0] + 2) + ',' + str(center[1] + 3) +
              ' L ' + str(center[0] - 2) + ',' + str(center[1] + 3) +
              ' L ' + str(center[0]) + ',' + str(center[1] - 3) + ' z')
-    elem.set('transform', 'rotate(' + str(rotation + 90) + ', ' + str(center[0]) + ', ' + str(center[1]) + ')')
+    elem.set('transform', 'rotate(' + str(degrees(rotation) + 90) + ', ' + str(center[0]) + ', ' + str(center[1]) + ')')
     elem.style = style
     return elem
 
