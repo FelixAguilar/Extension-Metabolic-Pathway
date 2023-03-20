@@ -6,8 +6,8 @@
     <param name="tab" type="notebook">
         <page name="DAG" gui-text="DAG Metabólico">
             <param name="type_M" type="optiongroup" appearance="combo" gui-text="Tipo de elemento:">  ➎
-                <option value="Reactions">Reacción</option>
-                <option value="Elemental_Reactions">Reacción elemental</option>
+                <option value="Reactions">MBB simple</option>
+                <option value="Elemental_Reactions">MBB simple esencial</option>
                 <option value="Metabolic_Building_Block">MBB</option>
             </param>
             <param name="ID_M" type="string" gui-text="Código del elemento:">1</param>
@@ -22,7 +22,7 @@
             <param name="type_R" type="optiongroup" appearance="combo" gui-text="Tipo de elemento:">  ➎
                 <option value="Reactions">Reacción</option>
                 <option value="Component">Compuesto</option>
-                <option value="Inverse_Reaction">Reacción inversa</option>
+                <option value="Inverse_Reaction">Reacción Reversible</option>
             </param>
             <param name="ID_R" type="string" gui-text="Código del elemento:">1</param>
             <param name="KEGG_reaction_R" type="string" gui-text="Código de la reacción dentro del KEGG:">R1234</param>

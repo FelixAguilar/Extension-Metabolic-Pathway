@@ -25,8 +25,8 @@ pestaña. A continuación se selecciona que clase de elemento se quiere añadir,
 Una vez definida la clase, los diferentes campos de texto se rellenarán con la información necesaria para generar el elemento deseado. Los
 campos a utilizar variarán según el elemento:
 
-    La reacción, reacción elemental y reacción inversa utilizarán los campos de código del elemento, código de la reacción dentro del KEGG
-    y código de la enzima dentro del KEGG.
+    El MBB simple, MBB esencial, la reacción y reacción reversible utilizarán los campos de código del elemento, código de la reacción 
+    dentro del KEGG y código de la enzima dentro del KEGG.
 
     El MBB solo utilizará el campo código del elemento, indicando así el número identificativo del conjunto al que hace referencia.
 
