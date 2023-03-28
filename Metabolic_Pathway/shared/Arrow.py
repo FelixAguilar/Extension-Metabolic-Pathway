@@ -120,7 +120,7 @@ def add_arrow_image(self: Any, element_A: Any, element_B: Any) -> None:
     # Gets the size to add or remove from the elements according to the type of it.
     if(is_image(element_A.tag_name)):
         aux_angle = get_equivalent_angle(angle)
-        size_A = get_separate_size(get_rectangle_size(size_A[0],size_A[1], get_equivalent_angle(aux_angle)), aux_angle)
+        size_A = get_separate_size(get_rectangle_size(size_A[0],size_A[1],aux_angle), aux_angle)
     else:
         size_A = get_size(id_A, size_A, angle)
 
