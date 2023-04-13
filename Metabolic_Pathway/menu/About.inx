@@ -25,16 +25,16 @@ pestaña. A continuación se selecciona que clase de elemento se quiere añadir,
 Una vez definida la clase, los diferentes campos de texto se rellenarán con la información necesaria para generar el elemento deseado. Los
 campos a utilizar variarán según el elemento:
 
-    El MBB simple, MBB esencial, la reacción y reacción reversible utilizarán los campos de código del elemento, código de la reacción 
+    El MBB simple, MBB esencial, la reacción y reacción reversible utilizarán los campos de código del MBB, código de la reacción 
     dentro del KEGG y código de la enzima dentro del KEGG.
 
-    El MBB solo utilizará el campo código del elemento, indicando así el número identificativo del conjunto al que hace referencia.
+    El MBB solo utilizará el campo código del MBB, indicando así el número identificativo del conjunto al que hace referencia.
 
-    El compuesto solo utilizará el campo código del elemento, el cual indicará el código dentro del KEGG o el nombre de éste.
+    El compuesto solo utilizará el campo código del MBB, el cual indicará el código dentro del KEGG o el nombre de éste.
 
 Si alguno de los campos no está rellenado o bien el formato no es adecuado, aparecerá un mensaje de error que indicará que sucede.
 
-Además se puede indicar si el elemento ha de tener un código único. Si es así, se comprobará si hay algún elemento utilizando este código,
+Además se puede indicar si el elemento ha de tener un código del MBB único. Si es así, se comprobará si hay algún elemento utilizando este código,
 y en tal caso se generará un mensaje de error. Hay que tener en cuenta que si esta opción se deshabilita, se puede generar un elemento con
 el código repetido.
             </label>
