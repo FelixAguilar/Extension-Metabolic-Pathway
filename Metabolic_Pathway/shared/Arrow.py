@@ -37,6 +37,7 @@ def get_line_coordinates(center_A: Tuple[float, float], size_A: Tuple[float, flo
 
     return ((x_A, y_A), (x_B, y_B))
 
+# Function used to draw the path.
 def add_straight_arrow(self, origin_id, destiantion_id, origin, destination):
 
     # Calculate the angle of the arrow to the horizontal axis.
@@ -59,6 +60,7 @@ def add_straight_arrow(self, origin_id, destiantion_id, origin, destination):
     layer.add(group)
     BaseElement.set_random_id(group, prefix = 'P ')
 
+# Function used to calculate the coodenates for the path.
 def add_arrow(self: Any, element_A: Any, element_B: Any) -> None:
 
     # Obtains the properties of both elements.
@@ -91,6 +93,7 @@ def add_arrow(self: Any, element_A: Any, element_B: Any) -> None:
     # Adds the arrow, this one doesn't take into account the elements in his path.
     add_straight_arrow(self, id_B, id_A, coordinates_B, coordinates_A)
 
+# Function used to calculate the coodenates for the path but this time can be also images.
 def add_arrow_image(self: Any, element_A: Any, element_B: Any) -> None:
 
     # Obtains the properties of both elements.

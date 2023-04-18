@@ -45,6 +45,7 @@ class Constructor(inkex.EffectExtension):
             y = position[1] + transform[1]
             size = size + self.options.difference
 
+            # If the new size is negative returns an error.
             if(size <= 0):
                 inkex.errormsg(error_negative_size_1 + id + error_negative_size_2)
             else:
@@ -83,6 +84,7 @@ class Constructor(inkex.EffectExtension):
         # Filters the svg elements so there are only paths.
         paths = list(filter(is_path, self.svg.get_ids()))
 
+        # for each path checks if the elements that it connects have changed, if so they will be modified.
         inter_path = []
         for path_id in paths:
             change = False

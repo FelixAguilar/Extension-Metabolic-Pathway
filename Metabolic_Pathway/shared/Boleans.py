@@ -21,6 +21,7 @@ def is_metabolic_pathway_element(ID: str) -> bool:
     pattern = re.compile("[E|I|M|C|R] [0-9]+")
     return pattern.match(ID)
 
+# Checjs if the tag is for a image.
 def is_image(tag: str) -> bool:
     return tag == 'image'
 

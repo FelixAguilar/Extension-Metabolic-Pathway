@@ -87,6 +87,7 @@ class Group_info:
     def set_group(self, group) -> None:
         self.group = group
 
+# Element info and call to generate it.
 class Element:
 
     #Constructor
@@ -226,7 +227,7 @@ class Constructor(inkex.EffectExtension):
                     size_y: float = 0                  # Size of the element in the y axis.
                     name: float = ""                   # Used for compounds if it is not using codes.
 
-                    # Filters the text setting the type of element with it if it can. Also saves the text in the correct variable. TODO
+                    # Filters the text setting the type of element with it if it can. Also saves the text in the correct variable.
                     for text in texts:
                         if(pattern2.match(text) or pattern3.match(text)):
                             reactions.append(text)

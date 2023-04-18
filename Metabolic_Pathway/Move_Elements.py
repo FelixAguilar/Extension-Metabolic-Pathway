@@ -24,8 +24,7 @@ class Constructor(inkex.EffectExtension):
         def check_element(element) -> bool: return is_metabolic_pathway_element(element.get_id()) or is_image(element.tag_name)
         elements = list(filter(check_element, self.svg.selection))
 
-        # If there is elements selected, it works as intended, if there is no 
-        # elements selected and all are paths then they are drawed again.
+        # If there is elements selected, it works as intended, if there is no elements selected and all are paths then they are drawed again.
         if(elements):
 
             # Obteins all the path ids in the svg.

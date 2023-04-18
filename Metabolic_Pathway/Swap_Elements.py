@@ -29,9 +29,10 @@ class Constructor(inkex.EffectExtension):
                 element = component
 
         if(image != -1 and element != -1):
-            # Obteins all the path in the svg.
+            # Obteins all the paths in the svg.
             paths = list(filter(is_path, self.svg.get_ids()))
 
+            # Obteins all paths that connects with the image and the element.
             element_id = element.get_id()
             image_id = image.get_id()
             swap_paths = []
@@ -43,7 +44,7 @@ class Constructor(inkex.EffectExtension):
                 elif(path.get('id_dest') == image_id or path.get('id_orig') == image_id):
                     img_paths.append(path)
 
-            # Redraws paths.
+            # Redraws paths and redirects them to the image.
             if(swap_paths):
                 for path in swap_paths:
                     if(not (path.get('id_orig') == image.get_id() or path.get('id_dest') == image.get_id())):
